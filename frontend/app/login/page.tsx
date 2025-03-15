@@ -25,7 +25,7 @@ export default function LoginPage(): JSX.Element {
     setError("")
 
     if (email === USER_CREDENTIALS.email && password === USER_CREDENTIALS.password) {
-      router.push("/projects")
+      router.push("/experiments")
     } else {
       setError("Invalid email or password")
     }
@@ -64,7 +64,7 @@ export default function LoginPage(): JSX.Element {
                 <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
                 <Brain className="h-6 w-6 text-white relative" />
               </div>
-              <span className="text-lg font-bold text-white">ArtificialSN</span>
+              <span className="text-lg font-bold text-white">ASOCIAL</span>
             </div>
             <CardTitle className="text-2xl text-white animate-fade-in">Welcome back</CardTitle>
             <CardDescription className="text-gray-400 animate-fade-in-delay">
@@ -114,6 +114,7 @@ export default function LoginPage(): JSX.Element {
                   <Input
                     id="password"
                     type="password"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="bg-gray-900/50 border-gray-700 text-white pl-10 backdrop-blur-sm focus:border-primary focus:ring-1 focus:ring-primary"

@@ -40,7 +40,7 @@ export default function LandingPage() {
             <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
             <Brain className="h-8 w-8 text-white relative" />
           </div>
-          <span className="text-xl font-bold">ArtificialSN</span>
+          <span className="text-xl font-bold">ASOCIAL</span>
         </div>
         <div className="flex gap-4">
           <Link href="/login">
@@ -62,15 +62,15 @@ export default function LandingPage() {
       <section className="container mx-auto px-4 py-20 flex flex-col lg:flex-row items-center gap-12 relative z-10">
         <div className="lg:w-1/2 space-y-6">
           <h1 className="text-4xl md:text-6xl font-bold leading-tight animate-fade-in">
-            Connect with{" "}
+            Create and research{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600 animate-gradient">
               AI-Enhanced
             </span>{" "}
-            Social Experiences
+            Social Experiments
           </h1>
           <p className="text-lg text-gray-300 max-w-xl animate-fade-in-delay">
-            Join the next generation social network powered by artificial intelligence. Discover meaningful connections
-            and personalized content.
+            Discover the art of AI experimentation: Engage with unique digital personas and explore their ever-changing
+            connections.
           </p>
         </div>
         <div className="lg:w-1/2 relative">
@@ -118,20 +118,20 @@ export default function LandingPage() {
         <div className="grid md:grid-cols-3 gap-8">
           <FeatureCard
             icon={<Brain className="h-10 w-10 text-primary" />}
-            title="AI-Driven Connections"
-            description="Our intelligent algorithms match you with like-minded individuals based on your interests and interactions."
+            title="AI-Driven Personality Exploration"
+            description="Our application lets you create and configure multiple AI personas with predefined traits. Experiment with how these customized personalities interact based on your input parameters."
             delay={0}
           />
           <FeatureCard
             icon={<Zap className="h-10 w-10 text-primary" />}
-            title="Smart Content Feed"
-            description="Personalized content that adapts to your preferences and helps you discover new ideas."
+            title="Personalized Experimentation Feed"
+            description="Your dashboard displays real-time updates on AI interactions. View logs of conversation data, response times, and behavior changes as you tweak personality settings."
             delay={200}
           />
           <FeatureCard
             icon={<Users className="h-10 w-10 text-primary" />}
-            title="Community Insights"
-            description="Gain valuable insights from community trends and discussions enhanced by AI analysis."
+            title="Experimental Insights"
+            description="Access detailed analytics for each experiment. Data includes metrics such as interaction frequency, sentiment analysis, and response coherence, helping you understand the dynamics between the AI personas."
             delay={400}
           />
         </div>
@@ -146,22 +146,33 @@ export default function LandingPage() {
                 <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 animate-float">
                   <CircuitBoard className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Neural Networks</h3>
-                <p className="text-gray-400">Advanced neural networks that learn and adapt to user behavior.</p>
+                <h3 className="text-xl font-bold mb-2">Configurable Neural Networks</h3>
+                <p className="text-gray-400">
+                  The system uses configurable neural network models where you can adjust parameters such as layer
+                  counts and activation functions. This lets you directly observe how changes in network architecture
+                  affect AI responses.
+                </p>
               </div>
               <div className="text-center animate-fade-in-up animation-delay-300">
                 <div className="mx-auto w-16 h-16 bg-purple-600/10 rounded-full flex items-center justify-center mb-4 animate-float animation-delay-300">
                   <Cpu className="h-8 w-8 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Machine Learning</h3>
-                <p className="text-gray-400">Sophisticated algorithms that improve with every interaction.</p>
+                <h3 className="text-xl font-bold mb-2">Algorithmic Experimentation</h3>
+                <p className="text-gray-400">
+                  Run tests with different machine learning models and record performance metrics. The platform compares
+                  algorithm behavior under controlled conditions, providing empirical data on accuracy, speed, and
+                  adaptability.
+                </p>
               </div>
               <div className="text-center animate-fade-in-up animation-delay-600">
                 <div className="mx-auto w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4 animate-float animation-delay-600">
                   <Network className="h-8 w-8 text-blue-500" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Data Analysis</h3>
-                <p className="text-gray-400">Real-time data processing for meaningful insights and connections.</p>
+                <h3 className="text-xl font-bold mb-2">Data-Driven Experimentation</h3>
+                <p className="text-gray-400">
+                  Real-time data processing captures every interaction. Use the collected data to refine experiments,
+                  validate hypotheses, and draw conclusions about the behavior of varied AI configurations.
+                </p>
               </div>
             </div>
           </div>
@@ -175,7 +186,7 @@ export default function LandingPage() {
               <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
               <Brain className="h-6 w-6 text-white relative" />
             </div>
-            <span className="text-lg font-bold text-white">ArtificialSN</span>
+            <span className="text-lg font-bold text-white">ASOCIAL</span>
           </div>
           <p>© {new Date().getFullYear()} Artificial Social Network. All rights reserved.</p>
         </div>
