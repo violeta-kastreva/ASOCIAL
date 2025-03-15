@@ -15,8 +15,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
-interface ProjectCardProps {
+interface ExperimentCardProps {
   id: number
   title: string
   description: string
@@ -24,52 +25,52 @@ interface ProjectCardProps {
   members: number
 }
 
-const PROJECTS: ProjectCardProps[] = [
+const EXPERIMENTS: ExperimentCardProps[] = [
   {
     id: 1,
-    title: "Project 1",
+    title: "Experiment 1",
     description: "AI-driven data analysis platform with real-time insights and predictive modeling",
     progress: 75,
     members: 4,
   },
   {
     id: 2,
-    title: "Project 2",
+    title: "Experiment 2",
     description: "Neural network visualization tool for educational purposes and research",
     progress: 45,
     members: 3,
   },
   {
     id: 3,
-    title: "Project 3",
+    title: "Experiment 3",
     description: "Machine learning algorithm for natural language processing and sentiment analysis",
     progress: 90,
     members: 5,
   },
   {
     id: 4,
-    title: "Project 4",
+    title: "Experiment 4",
     description: "Computer vision system for object detection and classification in real-time video",
     progress: 30,
     members: 2,
   },
   {
     id: 5,
-    title: "Project 5",
+    title: "Experiment 5",
     description: "Reinforcement learning environment for autonomous agent training and simulation",
     progress: 60,
     members: 3,
   },
   {
     id: 6,
-    title: "Project 6",
+    title: "Experiment 6",
     description: "Generative adversarial network for creating synthetic data and artistic content",
     progress: 15,
     members: 2,
   },
 ]
 
-function ProjectCard({ title, description, progress, members }: ProjectCardProps) {
+function ExperimentCard({ title, description, progress, members }: ExperimentCardProps) {
   const router = useRouter()
 
   return (
@@ -95,7 +96,7 @@ function ProjectCard({ title, description, progress, members }: ProjectCardProps
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-gray-800" />
               <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">View Details</DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">Edit Project</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">Edit Experiment</DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer text-red-400">Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -114,20 +115,20 @@ function ProjectCard({ title, description, progress, members }: ProjectCardProps
           className="w-full bg-transparent border border-primary hover:bg-primary/20 transition-all duration-300 text-primary"
           onClick={() => router.push("/forum")}
         >
-          Open Project
+          Open Experiment
         </Button>
       </CardFooter>
     </Card>
   )
 }
 
-export default function ProjectsPage() {
+export default function ExperimentsPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
-  const filteredProjects = PROJECTS.filter(
-    (project) =>
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredExperiments = EXPERIMENTS.filter(
+    (experiment) =>
+      experiment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      experiment.description.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   return (
@@ -147,13 +148,13 @@ export default function ProjectsPage() {
                 <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
                 <Brain className="h-8 w-8 text-white relative" />
               </div>
-              <span className="text-xl font-bold">ArtificialSN</span>
+              <span className="text-xl font-bold">ASOCIAL</span>
             </div>
 
             <div className="relative w-full max-w-md mx-4">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search projects..."
+                placeholder="Search experiments..."
                 className="bg-gray-900/50 border-gray-800 pl-10 text-white focus:border-primary"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -161,6 +162,7 @@ export default function ProjectsPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2 hover:bg-gray-900">
@@ -193,30 +195,30 @@ export default function ProjectsPage() {
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">My Projects</h1>
-            <p className="text-gray-400 mt-1">Manage and track your AI projects</p>
+            <h1 className="text-3xl font-bold">My Experiments</h1>
+            <p className="text-gray-400 mt-1">Manage and track your AI experiments</p>
           </div>
-          <Link href="/projects/new">
+          <Link href="/experiments/new">
             <Button className="bg-primary hover:bg-primary/90 transition-all duration-300 flex items-center gap-2">
               <Plus className="h-4 w-4" />
-              <span>New Project</span>
+              <span>New Experiment</span>
             </Button>
           </Link>
         </div>
 
-        {/* Projects Grid */}
+        {/* Experiments Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} {...project} />
+          {filteredExperiments.map((experiment) => (
+            <ExperimentCard key={experiment.id} {...experiment} />
           ))}
         </div>
 
-        {filteredProjects.length === 0 && (
+        {filteredExperiments.length === 0 && (
           <div className="text-center py-12">
             <div className="mx-auto w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mb-4">
               <Search className="h-8 w-8 text-gray-600" />
             </div>
-            <h3 className="text-xl font-medium text-gray-300">No projects found</h3>
+            <h3 className="text-xl font-medium text-gray-300">No experiments found</h3>
             <p className="text-gray-500 mt-2">Try adjusting your search query</p>
           </div>
         )}

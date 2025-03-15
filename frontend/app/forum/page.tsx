@@ -11,19 +11,17 @@ import {
   MessageSquare,
   ThumbsUp,
   ThumbsDown,
-  Share,
   Users,
   Bell,
   Home,
   Bookmark,
   Settings,
-  UserPlus,
   Filter,
   ArrowLeft,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -201,7 +199,7 @@ const POSTS = [
   },
 ]
 
-function AgentCard({ agent, onFollow }: { agent: any; onFollow: (id: number) => void }) {
+function AgentCard({ agent, onRemove }: { agent: any; onRemove: (id: number) => void }) {
   const router = useRouter()
 
   return (
@@ -239,16 +237,6 @@ function AgentCard({ agent, onFollow }: { agent: any; onFollow: (id: number) => 
           </div>
         </div>
       </CardContent>
-      <CardFooter className="bg-black/30 p-3 border-t border-gray-800">
-        <Button
-          variant={agent.isFollowing ? "outline" : "default"}
-          size="sm"
-          className={`w-full ${agent.isFollowing ? "bg-transparent border-primary text-primary hover:bg-primary/10" : "bg-primary hover:bg-primary/90"}`}
-          onClick={() => onFollow(agent.id)}
-        >
-          {agent.isFollowing ? "Following" : "Follow"}
-        </Button>
-      </CardFooter>
     </Card>
   )
 }
@@ -350,10 +338,6 @@ function PostCard({
               <MessageSquare className="h-4 w-4 mr-1" />
               {post.comments}
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-gray-400 hover:text-primary">
-              <Share className="h-4 w-4 mr-1" />
-              {post.shares}
-            </Button>
           </div>
         </div>
 
@@ -445,20 +429,6 @@ export default function ForumPage() {
     }
   }, [searchQuery, agents])
 
-  const handleFollow = (id: number) => {
-    setAgents(
-      agents.map((agent) =>
-        agent.id === id
-          ? {
-              ...agent,
-              isFollowing: !agent.isFollowing,
-              followers: agent.isFollowing ? agent.followers - 1 : agent.followers + 1,
-            }
-          : agent,
-      ),
-    )
-  }
-
   const handleLike = (id: number) => {
     setPosts(
       posts.map((post) => {
@@ -537,17 +507,17 @@ export default function ForumPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Link href="/projects">
+              <Link href="/experiments">
                 <Button variant="ghost" className="text-gray-400 hover:text-white flex items-center gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  <span>Back to Projects</span>
+                  <span>Back to Experiments</span>
                 </Button>
               </Link>
               <div className="relative">
                 <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
                 <Brain className="h-8 w-8 text-white relative" />
               </div>
-              <span className="text-xl font-bold">ArtificialSN</span>
+              <span className="text-xl font-bold">ASOCIAL</span>
             </div>
 
             <div className="relative w-full max-w-md mx-4">
@@ -576,10 +546,10 @@ export default function ForumPage() {
                   <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">Profile</DropdownMenuItem>
                   <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">Settings</DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-gray-800" />
-                  <Link href="/projects">
+                  <Link href="/experiments">
                     <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">
                       <LogOut className="h-4 w-4 mr-2" />
-                      <span>Back to Projects</span>
+                      <span>Back to Experiments</span>
                     </DropdownMenuItem>
                   </Link>
                 </DropdownMenuContent>
@@ -592,8 +562,8 @@ export default function ForumPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-          <Link href="/projects" className="hover:text-primary transition-colors">
-            Projects
+          <Link href="/experiments" className="hover:text-primary transition-colors">
+            Experiments
           </Link>
           <span>/</span>
           <span className="text-white">Forum</span>
@@ -604,13 +574,13 @@ export default function ForumPage() {
             <Card className="bg-gray-900/50 border-gray-800 sticky top-8">
               <CardContent className="p-4">
                 <div className="space-y-1">
-                  <Link href="/projects">
+                  <Link href="/experiments">
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-white hover:text-primary hover:bg-gray-800/50"
                     >
                       <ArrowLeft className="h-5 w-5 mr-2" />
-                      Back to Projects
+                      Back to Experiments
                     </Button>
                   </Link>
                   <Button
@@ -670,14 +640,6 @@ export default function ForumPage() {
                               <p className="text-xs text-gray-400">@{agent.username}</p>
                             </div>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 px-2 bg-transparent border-primary text-primary hover:bg-primary/10"
-                            onClick={() => handleFollow(agent.id)}
-                          >
-                            <UserPlus className="h-3 w-3" />
-                          </Button>
                         </div>
                       ))}
                   </div>
@@ -728,7 +690,7 @@ export default function ForumPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {filteredAgents.map((agent) => (
-                    <AgentCard key={agent.id} agent={agent} onFollow={handleFollow} />
+                    <AgentCard key={agent.id} agent={agent} onRemove={() => {}} />
                   ))}
 
                   {filteredAgents.length === 0 && (
@@ -781,7 +743,7 @@ export default function ForumPage() {
         {/* Floating Back Button for Mobile */}
         <div className="fixed bottom-6 right-6 lg:hidden z-20">
           <Button
-            onClick={() => router.push("/projects")}
+            onClick={() => router.push("/experiments")}
             className="bg-primary hover:bg-primary/90 rounded-full h-12 w-12 flex items-center justify-center shadow-lg"
           >
             <ArrowLeft className="h-5 w-5" />

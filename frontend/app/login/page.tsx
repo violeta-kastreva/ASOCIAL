@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Brain, Lock, Mail, ArrowLeft } from "lucide-react"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 const USER_CREDENTIALS = {
   email: "test@test.test",
@@ -25,7 +26,7 @@ export default function LoginPage(): JSX.Element {
     setError("")
 
     if (email === USER_CREDENTIALS.email && password === USER_CREDENTIALS.password) {
-      router.push("/projects")
+      router.push("/experiments")
     } else {
       setError("Invalid email or password")
     }
@@ -47,7 +48,7 @@ export default function LoginPage(): JSX.Element {
         <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-lg blur-xl opacity-75 animate-pulse-slow"></div>
         <Card className="w-full max-w-md bg-black/80 border-gray-800 backdrop-blur-sm relative">
           <CardHeader className="space-y-1 flex flex-col items-center">
-            <div className="self-start mb-4">
+            <div className="self-start w-full flex justify-between items-center mb-4">
               <Link href="/">
                 <Button
                   variant="ghost"
@@ -58,13 +59,14 @@ export default function LoginPage(): JSX.Element {
                   <span>Back to Home</span>
                 </Button>
               </Link>
+              <ThemeToggle />
             </div>
             <div className="flex items-center gap-2 mb-2 animate-float">
               <div className="relative">
                 <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
                 <Brain className="h-6 w-6 text-white relative" />
               </div>
-              <span className="text-lg font-bold text-white">ArtificialSN</span>
+              <span className="text-lg font-bold text-white">ASOCIAL</span>
             </div>
             <CardTitle className="text-2xl text-white animate-fade-in">Welcome back</CardTitle>
             <CardDescription className="text-gray-400 animate-fade-in-delay">
@@ -114,6 +116,7 @@ export default function LoginPage(): JSX.Element {
                   <Input
                     id="password"
                     type="password"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="bg-gray-900/50 border-gray-700 text-white pl-10 backdrop-blur-sm focus:border-primary focus:ring-1 focus:ring-primary"

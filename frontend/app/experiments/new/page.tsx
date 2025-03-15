@@ -29,12 +29,12 @@ interface AgentType {
 }
 
 const AVATAR_OPTIONS = [
-  "/placeholder.svg?height=100&width=100",
-  "/placeholder.svg?height=100&width=100&text=AI",
-  "/placeholder.svg?height=100&width=100&text=Bot",
-  "/placeholder.svg?height=100&width=100&text=Agent",
-  "/placeholder.svg?height=100&width=100&text=ML",
-  "/placeholder.svg?height=100&width=100&text=NLP",
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.22%20-%20A%20mystical%20sorcerer%20with%20a%20long%20white%20beard%2C%20wearing%20a%20flowing%20purple%20robe%20adorned%20with%20arcane%20symbols%2C%20conjuring%20a%20glowing%20magical%20orb%20in%20his%20hands%2C%20-Rhw6fmB86KlpoVzZfAXr3ugbWDWvI8.webp", // Mystical Sorcerer
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.18%20-%20A%20medieval%20knight%20in%20dark%20armor%2C%20with%20a%20tattered%20cape%2C%20holding%20a%20massive%20battle%20axe%2C%20standing%20in%20a%20foggy%20battlefield%20with%20torches%20in%20the%20background-LxBi0DuU99EXcNBeFR7WUCQdO85TYE.webp", // Dark Knight
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.17%20-%20A%20sci-fi%20alien%20creature%20with%20glowing%20purple%20eyes%2C%20covered%20in%20bioluminescent%20patterns%2C%20with%20a%20sleek%20exoskeleton%2C%20standing%20in%20a%20futuristic%20neon-lit%20envi-Bt1XqRBBrzt13OfOJSuQCDP77lht3T.webp", // Alien Entity
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.15%20-%20A%20steampunk-style%20adventurer%20with%20a%20mechanical%20arm%2C%20wearing%20a%20brown%20leather%20coat%2C%20brass%20goggles%2C%20and%20a%20utility%20belt%2C%20standing%20in%20front%20of%20a%20steam-powe-4kFA6wgbKlX7ht5yRCiwVWOPWpN7ZC.webp", // Steampunk Explorer
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.13%20-%20A%20fantasy-style%20female%20warrior%20with%20silver%20hair%2C%20wearing%20intricate%20armor%20with%20magical%20engravings%2C%20holding%20a%20glowing%20sword%2C%20set%20against%20a%20mystical%20fore-VuQCj1eSBLFcgNKyAvGV9h1rHjjZCZ.webp", // Fantasy Warrior
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.10%20-%20A%20futuristic%20cyberpunk-style%20male%20character%20with%20neon%20blue%20hair%2C%20wearing%20a%20high-tech%20visor%20and%20a%20sleek%20black%20jacket%20with%20glowing%20accents%2C%20set%20against%20-BDfEjLEl75UXaep6DWQ4eZrTqx90NZ.webp", // Cyberpunk Agent
 ]
 
 function AgentCard({ agent, onRemove }: { agent: AgentType; onRemove: (id: number) => void }) {
@@ -64,29 +64,32 @@ function AgentCard({ agent, onRemove }: { agent: AgentType; onRemove: (id: numbe
   )
 }
 
-export default function NewProjectPage() {
+export default function NewExperimentPage() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [projectName, setProjectName] = useState("")
-  const [projectDescription, setProjectDescription] = useState("")
-  const [projectDays, setProjectDays] = useState(30)
+  const [experimentName, setExperimentName] = useState("")
+  const [experimentDescription, setExperimentDescription] = useState("")
+  const [experimentDays, setExperimentDays] = useState(30)
   const [agents, setAgents] = useState<AgentType[]>([
     {
       id: 1,
       name: "Research Agent",
-      avatar: AVATAR_OPTIONS[0],
+      avatar:
+        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.22%20-%20A%20mystical%20sorcerer%20with%20a%20long%20white%20beard%2C%20wearing%20a%20flowing%20purple%20robe%20adorned%20with%20arcane%20symbols%2C%20conjuring%20a%20glowing%20magical%20orb%20in%20his%20hands%2C%20-Rhw6fmB86KlpoVzZfAXr3ugbWDWvI8.webp",
       instructions: "Analyze data and provide research insights",
     },
     {
       id: 2,
       name: "Assistant Agent",
-      avatar: AVATAR_OPTIONS[1],
+      avatar:
+        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.15%20-%20A%20steampunk-style%20adventurer%20with%20a%20mechanical%20arm%2C%20wearing%20a%20brown%20leather%20coat%2C%20brass%20goggles%2C%20and%20a%20utility%20belt%2C%20standing%20in%20front%20of%20a%20steam-powe-4kFA6wgbKlX7ht5yRCiwVWOPWpN7ZC.webp",
       instructions: "Help with general tasks and coordination",
     },
     {
       id: 3,
       name: "Creative Agent",
-      avatar: AVATAR_OPTIONS[2],
+      avatar:
+        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.13%20-%20A%20fantasy-style%20female%20warrior%20with%20silver%20hair%2C%20wearing%20intricate%20armor%20with%20magical%20engravings%2C%20holding%20a%20glowing%20sword%2C%20set%20against%20a%20mystical%20fore-VuQCj1eSBLFcgNKyAvGV9h1rHjjZCZ.webp",
       instructions: "Generate creative ideas and content",
     },
   ])
@@ -143,14 +146,14 @@ export default function NewProjectPage() {
     setAgents(agents.filter((agent) => agent.id !== id))
   }
 
-  const createProject = () => {
-    if (projectName.trim() === "") {
+  const createExperiment = () => {
+    if (experimentName.trim() === "") {
       return
     }
 
     // In a real app, you would save this to a database
-    // For now, we'll just navigate back to the projects page
-    router.push("/projects")
+    // For now, we'll just navigate back to the experiments page
+    router.push("/experiments")
   }
 
   return (
@@ -176,13 +179,13 @@ export default function NewProjectPage() {
                 <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
                 <Brain className="h-8 w-8 text-white relative" />
               </div>
-              <span className="text-xl font-bold">ArtificialSN</span>
+              <span className="text-xl font-bold">ASOCIAL</span>
             </div>
 
-            <Link href="/projects">
+            <Link href="/experiments">
               <Button variant="ghost" className="text-gray-400 hover:text-white flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                <span>Back to Projects</span>
+                <span>Back to Experiments</span>
               </Button>
             </Link>
           </div>
@@ -193,12 +196,12 @@ export default function NewProjectPage() {
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">Create New Project</h1>
-            <p className="text-gray-400 mt-1">Set up your new AI project and add agents</p>
+            <h1 className="text-3xl font-bold">Create New Experiment</h1>
+            <p className="text-gray-400 mt-1">Set up your new AI experiment and add agents</p>
           </div>
 
           <div className="grid gap-8">
-            {/* Project Details Card */}
+            {/* Experiment Details Card */}
             <Card className="bg-gray-900/50 border-gray-800 overflow-hidden">
               <div className="h-1 bg-gradient-to-r from-primary to-purple-600"></div>
               <CardContent className="p-6">
@@ -206,7 +209,7 @@ export default function NewProjectPage() {
                   <div className="bg-primary/20 p-2 rounded-lg">
                     <FileText className="h-5 w-5 text-primary" />
                   </div>
-                  <h2 className="text-xl font-bold">Project Details</h2>
+                  <h2 className="text-xl font-bold">Experiment Details</h2>
                 </div>
 
                 <div className="grid gap-6">
@@ -218,9 +221,9 @@ export default function NewProjectPage() {
                     <div className="relative">
                       <Input
                         id="name"
-                        placeholder="Enter project name"
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
+                        placeholder="Enter experiment name"
+                        value={experimentName}
+                        onChange={(e) => setExperimentName(e.target.value)}
                         className="bg-gray-800/50 border-gray-700 text-white pl-10 focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -237,9 +240,9 @@ export default function NewProjectPage() {
                     <div className="relative">
                       <Textarea
                         id="description"
-                        placeholder="Describe your project"
-                        value={projectDescription}
-                        onChange={(e) => setProjectDescription(e.target.value)}
+                        placeholder="Describe your experiment"
+                        value={experimentDescription}
+                        onChange={(e) => setExperimentDescription(e.target.value)}
                         className="bg-gray-800/50 border-gray-700 text-white min-h-[120px] pl-10 focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                       <div className="absolute left-3 top-6 pointer-events-none">
@@ -259,8 +262,8 @@ export default function NewProjectPage() {
                         type="number"
                         min={1}
                         max={365}
-                        value={projectDays}
-                        onChange={(e) => setProjectDays(Number.parseInt(e.target.value))}
+                        value={experimentDays}
+                        onChange={(e) => setExperimentDays(Number.parseInt(e.target.value))}
                         className="bg-gray-800/50 border-gray-700 text-white pl-10 focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -321,18 +324,18 @@ export default function NewProjectPage() {
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-4 mt-4">
-              <Link href="/projects">
+              <Link href="/experiments">
                 <Button variant="outline" className="bg-transparent border-gray-700 text-white hover:bg-gray-800">
                   Cancel
                 </Button>
               </Link>
               <Button
-                onClick={createProject}
+                onClick={createExperiment}
                 className="bg-primary hover:bg-primary/90 flex items-center gap-2"
-                disabled={projectName.trim() === ""}
+                disabled={experimentName.trim() === ""}
               >
                 <Save className="h-4 w-4" />
-                <span>Create Project</span>
+                <span>Create Experiment</span>
               </Button>
             </div>
           </div>

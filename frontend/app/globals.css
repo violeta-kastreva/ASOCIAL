@@ -3,14 +3,46 @@
 @tailwind utilities;
 
 :root {
+  /* Light mode (default) - changing from pure white to a soft light color */
+  --foreground-rgb: 30, 30, 30;
+  --background-start-rgb: 250, 250, 252; /* Slightly off-white with a hint of purple */
+  --background-end-rgb: 245, 245, 250; /* Slightly off-white with a hint of purple */
+  --primary-color: 139, 92, 246; /* Purple-500 */
+  --primary-light: 196, 181, 253; /* Purple-300 */
+  --primary-dark: 109, 40, 217; /* Purple-700 */
+  --card-bg: 255, 255, 255;
+  --card-border: 237, 233, 254;
+  --text-primary: 30, 30, 30;
+  --text-secondary: 107, 114, 128;
+  --accent-light: 243, 238, 255;
+  --gray-light: 249, 250, 251;
+  --gray-medium: 229, 231, 235;
+  --button-text-light: 0, 0, 0; /* Black text for buttons in light mode */
+  --button-text-dark: 255, 255, 255; /* White text for buttons in dark mode */
+}
+
+.dark {
+  /* Dark mode */
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 0, 0, 0;
   --background-end-rgb: 0, 0, 0;
+  --primary-color: 139, 92, 246; /* Purple-500 */
+  --primary-light: 196, 181, 253; /* Purple-300 */
+  --primary-dark: 109, 40, 217; /* Purple-700 */
+  --card-bg: 20, 20, 20;
+  --card-border: 50, 50, 50;
+  --text-primary: 255, 255, 255;
+  --text-secondary: 180, 180, 180;
+  --accent-light: 30, 30, 60;
+  --gray-light: 30, 30, 30;
+  --gray-medium: 50, 50, 50;
+  --button-text-light: 0, 0, 0; /* Black text for buttons in light mode */
+  --button-text-dark: 255, 255, 255; /* White text for buttons in dark mode */
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  color: rgb(var(--text-primary));
+  background: rgb(var(--background-start-rgb));
 }
 
 /* Animation Keyframes */
@@ -193,7 +225,7 @@ body {
   left: 0;
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.2), transparent);
   animation: loading-bar 2s infinite;
 }
 
@@ -210,7 +242,7 @@ body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #4f46e5;
+  background: #8b5cf6;
   animation: node-pulse 3s infinite;
 }
 
@@ -253,7 +285,7 @@ body {
 .connection {
   position: absolute;
   height: 2px;
-  background: linear-gradient(90deg, #4f46e5, #9333ea);
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
   animation: connection-pulse 3s infinite;
   transform-origin: left center;
 }
@@ -306,7 +338,7 @@ body {
   width: 8px;
   height: 6px;
   border-radius: 50%;
-  background: #4f46e5;
+  background: #8b5cf6;
   animation: data-flow 3s infinite;
 }
 
@@ -317,14 +349,244 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: linear-gradient(rgba(79, 70, 229, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 70, 229, 0.1) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: grid-move 20s linear infinite;
   opacity: 0.2;
 }
 
+.dark .grid-animation {
+  opacity: 0.2;
+}
+
+.light .grid-animation {
+  opacity: 0.03;
+  background-image: linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
+}
+
 .animate-shimmer {
   animation: shimmer 2s infinite;
+}
+
+/* Simplified Light Mode Styles - No Shadows */
+.light .bg-black {
+  background-color: rgb(var(--background-start-rgb)) !important;
+}
+
+.light .text-white {
+  color: rgb(var(--text-primary)) !important;
+}
+
+.light .text-gray-400 {
+  color: rgb(var(--text-secondary)) !important;
+}
+
+.light .text-gray-300 {
+  color: rgb(80, 80, 80) !important;
+}
+
+.light .text-gray-200 {
+  color: rgb(60, 60, 60) !important;
+}
+
+/* Remove all shadows in light mode */
+.light .shadow-lg,
+.light .shadow-md,
+.light .shadow-sm,
+.light .shadow {
+  box-shadow: none !important;
+}
+
+.light .blur,
+.light .blur-xl,
+.light .blur-lg,
+.light .blur-md,
+.light .blur-sm {
+  filter: none !important;
+}
+
+/* Flat card backgrounds */
+.light .bg-gray-900\/50,
+.light .bg-black\/80,
+.light .bg-black\/60,
+.light .bg-black\/30 {
+  background-color: rgb(var(--card-bg)) !important;
+  box-shadow: none !important;
+}
+
+/* Simplified borders */
+.light .border-gray-800,
+.light .border-gray-700 {
+  border-color: rgb(var(--gray-medium)) !important;
+}
+
+/* Flat backgrounds */
+.light .bg-gray-800\/50,
+.light .bg-gray-800,
+.light .bg-black\/30 {
+  background-color: rgb(var(--gray-light)) !important;
+}
+
+/* Remove gradients */
+.light .from-gray-900,
+.light .via-black,
+.light .to-black,
+.light .from-gray-100,
+.light .to-gray-200,
+.light .to-white {
+  background: rgb(var(--background-start-rgb)) !important;
+  background-image: none !important;
+}
+
+/* Simplified hover states */
+.light .hover\:bg-gray-800:hover,
+.light .hover\:bg-gray-800\/50:hover,
+.light .hover\:bg-gray-900:hover {
+  background-color: rgb(var(--gray-medium)) !important;
+}
+
+.light .bg-gray-900 {
+  background-color: rgb(var(--card-bg)) !important;
+}
+
+.light .bg-gray-200 {
+  background-color: rgb(var(--gray-light)) !important;
+}
+
+.light .text-gray-900 {
+  color: rgb(var(--text-primary)) !important;
+}
+
+.light .text-gray-600 {
+  color: rgb(var(--text-secondary)) !important;
+}
+
+/* Purple accent colors - consistent in both themes */
+.light .bg-primary\/20,
+.dark .bg-primary\/20 {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+.light .text-primary,
+.dark .text-primary {
+  color: rgb(139, 92, 246) !important;
+}
+
+.light .from-primary,
+.dark .from-primary {
+  --tw-gradient-from: rgb(139, 92, 246) !important;
+}
+
+.light .to-purple-600,
+.dark .to-purple-600 {
+  --tw-gradient-to: rgb(124, 58, 237) !important;
+}
+
+.light .bg-primary,
+.dark .bg-primary {
+  background-color: rgb(139, 92, 246) !important;
+}
+
+.light .hover\:bg-primary\/90:hover,
+.dark .hover\:bg-primary\/90:hover {
+  background-color: rgba(139, 92, 246, 0.9) !important;
+}
+
+.light .border-primary,
+.dark .border-primary {
+  border-color: rgb(139, 92, 246) !important;
+}
+
+.light .hover\:border-primary\/50:hover,
+.dark .hover\:border-primary\/50:hover {
+  border-color: rgba(139, 92, 246, 0.5) !important;
+}
+
+.light .hover\:bg-primary\/20:hover,
+.dark .hover\:bg-primary\/20:hover {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+.light .hover\:text-primary:hover,
+.dark .hover\:text-primary:hover {
+  color: rgb(139, 92, 246) !important;
+}
+
+/* Remove gradient effects */
+.light .from-primary\/20,
+.light .to-purple-600\/20 {
+  background: transparent !important;
+}
+
+/* Specific overrides for better light mode appearance */
+.light .bg-gradient-to-b.from-gray-900.to-black {
+  background: rgb(var(--card-bg)) !important;
+  border: 1px solid rgb(var(--gray-medium)) !important;
+}
+
+.light .bg-black\/60.border.border-gray-800 {
+  background-color: rgb(var(--card-bg)) !important;
+  border-color: rgb(var(--gray-medium)) !important;
+}
+
+.light .border-t.border-gray-800 {
+  border-color: rgb(var(--gray-medium)) !important;
+}
+
+/* Remove glow effects in light mode */
+.light .animate-pulse,
+.light .animate-pulse-slow {
+  animation: none !important;
+}
+
+/* Remove absolute inset styling that creates glow effects */
+.light .absolute.-inset-1,
+.light .absolute.-inset-0.5 {
+  display: none !important;
+}
+
+/* Simplify card styling in light mode */
+.light .card,
+.light .rounded-lg,
+.light .rounded-xl {
+  box-shadow: none !important;
+  border: 1px solid rgb(var(--gray-medium)) !important;
+}
+
+/* Button text color in light mode */
+.light .bg-primary .text-white,
+.light .bg-primary .relative.z-10,
+.light .bg-primary span,
+.light .bg-primary\/90 .text-white,
+.light .bg-primary\/90 .relative.z-10,
+.light .bg-primary\/90 span,
+.light button.bg-primary span,
+.light button.bg-primary\/90 span {
+  color: rgb(var(--button-text-light)) !important;
+}
+
+/* Ensure login/register buttons have black text in light mode */
+.light a[href="/login"] button span,
+.light a[href="/register"] button span {
+  color: rgb(var(--button-text-light)) !important;
+}
+
+/* Dark mode buttons should have white text */
+.dark .bg-primary .text-white,
+.dark .bg-primary .relative.z-10,
+.dark .bg-primary span,
+.dark .bg-primary\/90 .text-white,
+.dark .bg-primary\/90 .relative.z-10,
+.dark .bg-primary\/90 span,
+.dark button.bg-primary span,
+.dark button.bg-primary\/90 span {
+  color: rgb(var(--button-text-dark)) !important;
+}
+
+.dark a[href="/login"] button span,
+.dark a[href="/register"] button span {
+  color: rgb(var(--button-text-dark)) !important;
 }
 

@@ -10,10 +10,7 @@ import {
   MessageSquare,
   ThumbsUp,
   ThumbsDown,
-  Share,
   ArrowLeft,
-  UserPlus,
-  UserMinus,
   Calendar,
   MapPin,
   Link2,
@@ -315,10 +312,6 @@ function PostCard({
               <MessageSquare className="h-4 w-4 mr-1" />
               {post.comments}
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-gray-400 hover:text-primary">
-              <Share className="h-4 w-4 mr-1" />
-              {post.shares}
-            </Button>
           </div>
         </div>
 
@@ -408,24 +401,6 @@ export default function AgentProfilePage() {
       router.push("/forum")
     }
   }, [agentId, router])
-
-  const handleFollow = () => {
-    if (!agent) return
-
-    setAgent({
-      ...agent,
-      isFollowing: !agent.isFollowing,
-      followers: agent.isFollowing ? agent.followers - 1 : agent.followers + 1,
-    })
-
-    setAgents(
-      agents.map((a) =>
-        a.id === agentId
-          ? { ...a, isFollowing: !a.isFollowing, followers: a.isFollowing ? a.followers - 1 : a.followers + 1 }
-          : a,
-      ),
-    )
-  }
 
   const handleLike = (id: number) => {
     setPosts(
@@ -517,7 +492,7 @@ export default function AgentProfilePage() {
                 <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
                 <Brain className="h-8 w-8 text-white relative" />
               </div>
-              <span className="text-xl font-bold">ArtificialSN</span>
+              <span className="text-xl font-bold">ASOCIAL</span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -546,10 +521,10 @@ export default function AgentProfilePage() {
                   <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">Profile</DropdownMenuItem>
                   <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">Settings</DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-gray-800" />
-                  <Link href="/projects">
+                  <Link href="/experiments">
                     <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">
                       <LogOut className="h-4 w-4 mr-2" />
-                      <span>Back to Projects</span>
+                      <span>Back to Experiments</span>
                     </DropdownMenuItem>
                   </Link>
                 </DropdownMenuContent>
@@ -562,8 +537,8 @@ export default function AgentProfilePage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-          <Link href="/projects" className="hover:text-primary transition-colors">
-            Projects
+          <Link href="/experiments" className="hover:text-primary transition-colors">
+            Experiments
           </Link>
           <span>/</span>
           <Link href="/forum" className="hover:text-primary transition-colors">
@@ -612,27 +587,6 @@ export default function AgentProfilePage() {
                     <p className="text-xs text-gray-400">Following</p>
                   </div>
                 </div>
-
-                <Button
-                  className={`w-full mb-4 ${
-                    agent.isFollowing
-                      ? "bg-transparent border border-primary text-primary hover:bg-primary/10"
-                      : "bg-primary hover:bg-primary/90"
-                  }`}
-                  onClick={handleFollow}
-                >
-                  {agent.isFollowing ? (
-                    <>
-                      <UserMinus className="h-4 w-4 mr-2" />
-                      Unfollow
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Follow
-                    </>
-                  )}
-                </Button>
 
                 <Separator className="my-4 bg-gray-800" />
 

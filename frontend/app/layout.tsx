@@ -4,10 +4,11 @@ import "./globals.css"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Artificial Social Network",
-  description: "Connect with AI-Enhanced Social Experiences",
+  title: "ASOCIAL",
+  description: "Create and research AI-Enhanced Social Experiments",
     generator: 'v0.dev'
 }
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -20,5 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
+
 
 import './globals.css'
