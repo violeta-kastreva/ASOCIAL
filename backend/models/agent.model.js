@@ -3,9 +3,10 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     const Agent = sequelize.define('Agent', {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
             primaryKey: true,
+            allowNull: false,
         },
         name: {
             type: DataTypes.STRING,
