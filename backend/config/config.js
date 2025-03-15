@@ -23,16 +23,5 @@ module.exports = {
             dialect: 'postgres',
             logging: false,
         },
-    },
-    redis: {
-        development: {
-            url: process.env.REDIS_URL,
-        },
-        test: {
-            url: process.env.REDIS_URL,
-        },
-        production: {
-            url: process.env.REDIS_URL,
-        },
     }
 }
