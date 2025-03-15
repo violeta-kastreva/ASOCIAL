@@ -11,17 +11,15 @@ const userService = {};
  * @param {string} params.username - The user's username.
  * @param {string} params.email - The user's email.
  * @param {string} params.password - The user's password (hashed).
- * @param {string} params.role - The user's role.
  * @returns {Promise<Object>} The created user object.
  * @throws error
  */
-userService.createUser = async ({ username, email, password, role }) => {
+userService.createUser = async ({ username, email, password }) => {
     try {
         const user = await User.create({
             username: username,
             email: email,
-            password: password,
-            role: role
+            password: password
         });
         return user;
     } catch (error) {
