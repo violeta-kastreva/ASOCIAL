@@ -4,31 +4,60 @@ import type React from "react"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, Lock, Mail, ArrowLeft } from "lucide-react"
+import { Brain, Lock, Mail, LogIn, ArrowLeft } from "lucide-react"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { ErrorMessage } from "@/components/ui/error-message"
 
-const USER_CREDENTIALS = {
-  email: "test@test.test",
-  password: "12345678",
-}
-
-export default function LoginPage(): JSX.Element {
+export default function Login(): JSX.Element {
   const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+  const [error, setError] = useState('')
+  const [shakeError, setShakeError] = useState(false)
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+    setError('')
+  }
+
+  const triggerShakeAnimation = () => {
+    setShakeError(true)
+    setTimeout(() => setShakeError(false), 500)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setError('')
 
-    if (email === USER_CREDENTIALS.email && password === USER_CREDENTIALS.password) {
-      router.push("/experiments")
-    } else {
-      setError("Invalid email or password")
+    try {
+      const response = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        triggerShakeAnimation()
+        throw new Error(data.message || 'Login failed')
+      }
+
+      router.push('/experiments')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed')
+      console.error('Login error:', err)
     }
   }
 
@@ -46,40 +75,41 @@ export default function LoginPage(): JSX.Element {
 
       <div className="relative z-10 w-full max-w-md">
         <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-lg blur-xl opacity-75 animate-pulse-slow"></div>
-        <Card className="w-full max-w-md bg-black/80 border-gray-800 backdrop-blur-sm relative">
-          <CardHeader className="space-y-1 flex flex-col items-center">
-            <div className="self-start w-full flex justify-between items-center mb-4">
-              <Link href="/">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-white group flex items-center gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4 group-hover:text-primary transition-colors" />
-                  <span>Back to Home</span>
-                </Button>
-              </Link>
-              <ThemeToggle />
-            </div>
-            <div className="flex items-center gap-2 mb-2 animate-float">
-              <div className="relative">
-                <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
-                <Brain className="h-6 w-6 text-white relative" />
+        <motion.div
+          animate={shakeError ? {
+            x: [-10, 10, -10, 10, -10, 10, 0],
+            transition: { duration: 0.5 }
+          } : {}}
+        >
+          <Card className="w-full max-w-md bg-black/80 border-gray-800 backdrop-blur-sm relative">
+            <CardHeader className="space-y-1 flex flex-col items-center">
+              <div className="self-start w-full flex justify-between items-center mb-4">
+                <Link href="/">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-white group flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4 group-hover:text-primary transition-colors" />
+                    <span>Back to Home</span>
+                  </Button>
+                </Link>
+                <ThemeToggle />
               </div>
-              <span className="text-lg font-bold text-white">ASOCIAL</span>
-            </div>
-            <CardTitle className="text-2xl text-white animate-fade-in">Welcome back</CardTitle>
-            <CardDescription className="text-gray-400 animate-fade-in-delay">
-              Enter your credentials to access your account
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleLogin}>
-            <CardContent className="space-y-4">
-              {error && (
-                <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-2 rounded text-sm animate-fade-in">
-                  {error}
+              <div className="flex items-center gap-2 mb-2 animate-float">
+                <div className="relative">
+                  <div className="absolute -inset-1 bg-primary rounded-full blur opacity-70 animate-pulse"></div>
+                  <Brain className="h-6 w-6 text-white relative" />
                 </div>
-              )}
+                <span className="text-lg font-bold text-white">ASOCIAL</span>
+              </div>
+              <CardTitle className="text-2xl text-white animate-fade-in">Welcome back</CardTitle>
+              <CardDescription className="text-gray-400 animate-fade-in-delay">
+                Sign in to your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {error && <ErrorMessage message={error} />}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-200 flex items-center gap-2" htmlFor="email">
                   <Mail className="h-4 w-4 text-primary" />
@@ -89,9 +119,10 @@ export default function LoginPage(): JSX.Element {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="email"
+                    placeholder="name@example.com"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="bg-gray-900/50 border-gray-700 text-white pl-10 backdrop-blur-sm focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -100,25 +131,18 @@ export default function LoginPage(): JSX.Element {
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-200 flex items-center gap-2" htmlFor="password">
-                    <Lock className="h-4 w-4 text-primary" />
-                    Password
-                  </label>
-                  <span
-                    onClick={(e) => e.preventDefault()}
-                    className="text-sm text-primary hover:text-primary/80 transition-colors duration-300 cursor-pointer"
-                  >
-                    Forgot password?
-                  </span>
-                </div>
+                <label className="text-sm font-medium text-gray-200 flex items-center gap-2" htmlFor="password">
+                  <Lock className="h-4 w-4 text-primary" />
+                  Password
+                </label>
                 <div className="relative">
                   <Input
                     id="password"
                     type="password"
+                    name="password"
                     placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                     className="bg-gray-900/50 border-gray-700 text-white pl-10 backdrop-blur-sm focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -128,13 +152,16 @@ export default function LoginPage(): JSX.Element {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="submit"
+              <Button 
                 className="w-full bg-primary hover:bg-primary/90 transition-all duration-300 relative overflow-hidden group"
+                onClick={handleSubmit}
               >
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 animate-shimmer"></span>
-                <span className="relative z-10 text-white">Sign In</span>
+                <span className="relative z-10 text-white flex items-center justify-center gap-2">
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </span>
               </Button>
               <div className="text-center text-sm text-gray-400">
                 Don't have an account?{" "}
@@ -143,8 +170,8 @@ export default function LoginPage(): JSX.Element {
                 </Link>
               </div>
             </CardFooter>
-          </form>
-        </Card>
+          </Card>
+        </motion.div>
       </div>
     </div>
   )
