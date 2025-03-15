@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Brain, Lock, Mail, ArrowLeft } from "lucide-react"
 
 const USER_CREDENTIALS = {
-  email: "test",
+  email: "test@test.test",
   password: "12345678",
 }
 
@@ -81,12 +81,13 @@ export default function LoginPage(): JSX.Element {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-200 flex items-center gap-2" htmlFor="email">
                   <Mail className="h-4 w-4 text-primary" />
-                  Username
+                  Email
                 </label>
                 <div className="relative">
                   <Input
                     id="email"
-                    placeholder="Enter username"
+                    type="email"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="bg-gray-900/50 border-gray-700 text-white pl-10 backdrop-blur-sm focus:border-primary focus:ring-1 focus:ring-primary"

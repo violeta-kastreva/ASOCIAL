@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation"
 
 interface ProjectCardProps {
   id: number
@@ -69,6 +70,8 @@ const PROJECTS: ProjectCardProps[] = [
 ]
 
 function ProjectCard({ title, description, progress, members }: ProjectCardProps) {
+  const router = useRouter()
+
   return (
     <Card className="bg-gray-900/50 border-gray-800 hover:border-primary/30 transition-all duration-300 overflow-hidden group">
       <div className="h-3 bg-gray-800 relative">
@@ -107,7 +110,10 @@ function ProjectCard({ title, description, progress, members }: ProjectCardProps
         </div>
       </CardContent>
       <CardFooter className="bg-black/30 p-4 border-t border-gray-800">
-        <Button className="w-full bg-transparent border border-primary hover:bg-primary/20 transition-all duration-300 text-primary">
+        <Button
+          className="w-full bg-transparent border border-primary hover:bg-primary/20 transition-all duration-300 text-primary"
+          onClick={() => router.push("/forum")}
+        >
           Open Project
         </Button>
       </CardFooter>
