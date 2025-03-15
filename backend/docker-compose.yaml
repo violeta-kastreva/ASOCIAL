@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:latest
+    container_name: postgres_test
+    restart: always
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: test_database
+    ports:
+      - "5433:5432" # Maps PostgreSQL inside the container (5432) to your machine (5433)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
