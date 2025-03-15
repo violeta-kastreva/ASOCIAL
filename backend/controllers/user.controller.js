@@ -95,11 +95,11 @@ userController.loginUser = async (req, res) => {
             })
         }
 
-        const accessToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.ACCESS_TOKEN_SECRET, {
+        const accessToken = jwt.sign({userId: user.id}, process.env.ACCESS_TOKEN_SECRET, {
             subject: 'accessApi',
             expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
         });
-        const refreshToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.REFRESH_TOKEN_SECRET, {
+        const refreshToken = jwt.sign({userId: user.id}, process.env.REFRESH_TOKEN_SECRET, {
             subject: 'refreshToken',
             expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
         });
@@ -158,12 +158,12 @@ userController.refreshToken = async (req, res) => {
 
         await refreshTokenService.deleteRefreshToken(userRefreshToken.id);
 
-        const accessToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.ACCESS_TOKEN_SECRET, {
+        const accessToken = jwt.sign({userId: decoded.id}, process.env.ACCESS_TOKEN_SECRET, {
             subject: 'accessApi',
             expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
         });
 
-        const newRefreshToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.REFRESH_TOKEN_SECRET, {
+        const newRefreshToken = jwt.sign({userId: decoded.id}, process.env.REFRESH_TOKEN_SECRET, {
             subject: 'refreshToken',
             expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
         });
