@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Brain, User, Search, LogOut, Plus, MoreHorizontal, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -18,59 +18,19 @@ import { useRouter } from "next/navigation"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 interface ExperimentCardProps {
-  id: number
+  _id: string
   title: string
   description: string
   progress: number
-  members: number
+  agents: Array<{
+    name: string
+    avatar: string
+    instructions: string
+  }>
+  onDelete: (id: string) => void
 }
 
-const EXPERIMENTS: ExperimentCardProps[] = [
-  {
-    id: 1,
-    title: "Experiment 1",
-    description: "AI-driven data analysis platform with real-time insights and predictive modeling",
-    progress: 75,
-    members: 4,
-  },
-  {
-    id: 2,
-    title: "Experiment 2",
-    description: "Neural network visualization tool for educational purposes and research",
-    progress: 45,
-    members: 3,
-  },
-  {
-    id: 3,
-    title: "Experiment 3",
-    description: "Machine learning algorithm for natural language processing and sentiment analysis",
-    progress: 90,
-    members: 5,
-  },
-  {
-    id: 4,
-    title: "Experiment 4",
-    description: "Computer vision system for object detection and classification in real-time video",
-    progress: 30,
-    members: 2,
-  },
-  {
-    id: 5,
-    title: "Experiment 5",
-    description: "Reinforcement learning environment for autonomous agent training and simulation",
-    progress: 60,
-    members: 3,
-  },
-  {
-    id: 6,
-    title: "Experiment 6",
-    description: "Generative adversarial network for creating synthetic data and artistic content",
-    progress: 15,
-    members: 2,
-  },
-]
-
-function ExperimentCard({ title, description, progress, members }: ExperimentCardProps) {
+function ExperimentCard({ _id, title, description, progress, agents, onDelete }: ExperimentCardProps) {
   const router = useRouter()
 
   return (
@@ -97,7 +57,12 @@ function ExperimentCard({ title, description, progress, members }: ExperimentCar
               <DropdownMenuSeparator className="bg-gray-800" />
               <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">View Details</DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer">Edit Experiment</DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer text-red-400">Delete</DropdownMenuItem>
+              <DropdownMenuItem 
+                className="hover:bg-gray-800 cursor-pointer text-red-400"
+                onClick={() => onDelete(_id)}
+              >
+                Delete
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -105,7 +70,7 @@ function ExperimentCard({ title, description, progress, members }: ExperimentCar
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-1 text-gray-400">
               <Users className="h-4 w-4 text-primary" />
-              <span>{members} agents</span>
+              <span>{agents.length} agents</span>
             </div>
           </div>
         </div>
@@ -123,23 +88,57 @@ function ExperimentCard({ title, description, progress, members }: ExperimentCar
 }
 
 export default function ExperimentsPage() {
+  const [experiments, setExperiments] = useState<ExperimentCardProps[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(true)
 
-  const filteredExperiments = EXPERIMENTS.filter(
+  const fetchExperiments = async () => {
+    try {
+      // TODO: Replace with actual user ID from auth
+      const userId = "your-user-id"
+      const response = await fetch(`http://localhost:8080/api/experiments?userId=${userId}`)
+      const data = await response.json()
+      setExperiments(data)
+    } catch (error) {
+      console.error('Error fetching experiments:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/experiments/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        setExperiments(experiments.filter(exp => exp._id !== id))
+      } else {
+        throw new Error('Failed to delete experiment')
+      }
+    } catch (error) {
+      console.error('Error deleting experiment:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchExperiments()
+  }, [])
+
+  const filteredExperiments = experiments.filter(
     (experiment) =>
       experiment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      experiment.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      experiment.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Animated Background */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900 via-black to-black"></div>
         <div className="grid-animation"></div>
       </div>
 
-      {/* Header */}
       <header className="border-b border-gray-800 relative z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -191,7 +190,6 @@ export default function ExperimentsPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -206,10 +204,13 @@ export default function ExperimentsPage() {
           </Link>
         </div>
 
-        {/* Experiments Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredExperiments.map((experiment) => (
-            <ExperimentCard key={experiment.id} {...experiment} />
+            <ExperimentCard 
+              key={experiment._id} 
+              {...experiment} 
+              onDelete={handleDelete}
+            />
           ))}
         </div>
 

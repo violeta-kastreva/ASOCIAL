@@ -70,29 +70,7 @@ export default function NewExperimentPage() {
   const [experimentName, setExperimentName] = useState("")
   const [experimentDescription, setExperimentDescription] = useState("")
   const [experimentDays, setExperimentDays] = useState(30)
-  const [agents, setAgents] = useState<AgentType[]>([
-    {
-      id: 1,
-      name: "Research Agent",
-      avatar:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.22%20-%20A%20mystical%20sorcerer%20with%20a%20long%20white%20beard%2C%20wearing%20a%20flowing%20purple%20robe%20adorned%20with%20arcane%20symbols%2C%20conjuring%20a%20glowing%20magical%20orb%20in%20his%20hands%2C%20-Rhw6fmB86KlpoVzZfAXr3ugbWDWvI8.webp",
-      instructions: "Analyze data and provide research insights",
-    },
-    {
-      id: 2,
-      name: "Assistant Agent",
-      avatar:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.15%20-%20A%20steampunk-style%20adventurer%20with%20a%20mechanical%20arm%2C%20wearing%20a%20brown%20leather%20coat%2C%20brass%20goggles%2C%20and%20a%20utility%20belt%2C%20standing%20in%20front%20of%20a%20steam-powe-4kFA6wgbKlX7ht5yRCiwVWOPWpN7ZC.webp",
-      instructions: "Help with general tasks and coordination",
-    },
-    {
-      id: 3,
-      name: "Creative Agent",
-      avatar:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DALL%C2%B7E%202025-03-15%2020.51.13%20-%20A%20fantasy-style%20female%20warrior%20with%20silver%20hair%2C%20wearing%20intricate%20armor%20with%20magical%20engravings%2C%20holding%20a%20glowing%20sword%2C%20set%20against%20a%20mystical%20fore-VuQCj1eSBLFcgNKyAvGV9h1rHjjZCZ.webp",
-      instructions: "Generate creative ideas and content",
-    },
-  ])
+  const [agents, setAgents] = useState<AgentType[]>([])
 
   const [isAddAgentDialogOpen, setIsAddAgentDialogOpen] = useState(false)
   const [newAgentName, setNewAgentName] = useState("")
@@ -132,7 +110,7 @@ export default function NewExperimentPage() {
 
     if (agents.length < 30) {
       const newAgent = {
-        id: Date.now(), // Use timestamp for unique ID
+        id: Date.now(),
         name: newAgentName,
         avatar: avatarTab === "custom" && customAvatar ? customAvatar : selectedAvatar,
         instructions: newAgentInstructions,
@@ -146,31 +124,54 @@ export default function NewExperimentPage() {
     setAgents(agents.filter((agent) => agent.id !== id))
   }
 
-  const createExperiment = () => {
+  const createExperiment = async () => {
     if (experimentName.trim() === "") {
       return
     }
 
-    // In a real app, you would save this to a database
-    // For now, we'll just navigate back to the experiments page
-    router.push("/experiments")
+    try {
+      // TODO: Replace with actual user ID from auth
+      const userId = "your-user-id"
+      
+      const response = await fetch('http://localhost:8080/api/experiments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: experimentName,
+          description: experimentDescription,
+          agents: agents.map(agent => ({
+            name: agent.name,
+            avatar: agent.avatar,
+            instructions: agent.instructions
+          })),
+          userId
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create experiment')
+      }
+
+      router.push('/experiments')
+    } catch (error) {
+      console.error('Error creating experiment:', error)
+    }
   }
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Animated Background */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900 via-black to-black"></div>
         <div className="grid-animation"></div>
       </div>
 
-      {/* Floating Elements */}
       <div className="absolute top-1/4 left-10 w-4 h-4 bg-primary rounded-full animate-float opacity-70"></div>
       <div className="absolute top-1/3 right-10 w-6 h-6 bg-purple-600 rounded-full animate-float-delay opacity-70"></div>
       <div className="absolute bottom-1/4 left-1/4 w-8 h-8 bg-blue-500 rounded-full animate-float-delay-long opacity-50"></div>
       <div className="absolute top-2/3 right-1/4 w-5 h-5 bg-indigo-500 rounded-full animate-float opacity-60"></div>
 
-      {/* Header */}
       <header className="border-b border-gray-800 relative z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -192,7 +193,6 @@ export default function NewExperimentPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
@@ -201,7 +201,6 @@ export default function NewExperimentPage() {
           </div>
 
           <div className="grid gap-8">
-            {/* Experiment Details Card */}
             <Card className="bg-gray-900/50 border-gray-800 overflow-hidden">
               <div className="h-1 bg-gradient-to-r from-primary to-purple-600"></div>
               <CardContent className="p-6">
@@ -275,7 +274,6 @@ export default function NewExperimentPage() {
               </CardContent>
             </Card>
 
-            {/* Agents Card */}
             <Card className="bg-gray-900/50 border-gray-800 overflow-hidden">
               <div className="h-1 bg-gradient-to-r from-primary to-purple-600"></div>
               <CardContent className="p-6">
@@ -322,7 +320,6 @@ export default function NewExperimentPage() {
               </CardContent>
             </Card>
 
-            {/* Action Buttons */}
             <div className="flex justify-end gap-4 mt-4">
               <Link href="/experiments">
                 <Button variant="outline" className="bg-transparent border-gray-700 text-white hover:bg-gray-800">
@@ -342,7 +339,6 @@ export default function NewExperimentPage() {
         </div>
       </main>
 
-      {/* Add Agent Dialog */}
       <Dialog open={isAddAgentDialogOpen} onOpenChange={setIsAddAgentDialogOpen}>
         <DialogContent className="bg-gray-900 border-gray-800 text-white max-w-md max-h-[90vh] flex flex-col">
           <DialogHeader className="flex-shrink-0">
