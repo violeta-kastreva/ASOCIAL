@@ -2,6 +2,7 @@ import type React from "react"
 import { Brain, Users, Zap, CircuitBoard, Cpu, Network } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 interface FeatureCardProps {
   icon: React.ReactNode
@@ -42,7 +43,8 @@ export default function LandingPage() {
           </div>
           <span className="text-xl font-bold">ASOCIAL</span>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
+          <ThemeToggle />
           <Link href="/login">
             <Button className="relative overflow-hidden bg-transparent border border-primary hover:bg-primary/20 transition-all duration-300 group">
               <span className="absolute inset-0 w-full h-full bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>

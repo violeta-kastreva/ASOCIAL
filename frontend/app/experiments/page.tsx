@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 interface ExperimentCardProps {
   id: number
@@ -161,6 +162,7 @@ export default function ExperimentsPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2 hover:bg-gray-900">

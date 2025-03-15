@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Brain, User, Mail, Lock, UserPlus, ArrowLeft } from "lucide-react"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export default function RegisterPage(): JSX.Element {
   return (
@@ -21,7 +22,7 @@ export default function RegisterPage(): JSX.Element {
         <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-lg blur-xl opacity-75 animate-pulse-slow"></div>
         <Card className="w-full max-w-md bg-black/80 border-gray-800 backdrop-blur-sm relative">
           <CardHeader className="space-y-1 flex flex-col items-center">
-            <div className="self-start mb-4">
+            <div className="self-start w-full flex justify-between items-center mb-4">
               <Link href="/">
                 <Button
                   variant="ghost"
@@ -32,6 +33,7 @@ export default function RegisterPage(): JSX.Element {
                   <span>Back to Home</span>
                 </Button>
               </Link>
+              <ThemeToggle />
             </div>
             <div className="flex items-center gap-2 mb-2 animate-float">
               <div className="relative">
