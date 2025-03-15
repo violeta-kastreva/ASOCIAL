@@ -17,12 +17,11 @@ const userController = {};
  * @param {string} req.body.username - The user's username.
  * @param {string} req.body.email - The user's email.
  * @param {string} req.body.password - The user's password.
- * @param {string} req.body.role - The user's role.
  * @param {Object} res - Express response object.
  * @returns {Promise<Object>} JSON response containing a success message and user ID, or an error message.
  */
 userController.registerUser = async (req, res) => {
-    const {username, email, password, role} = req.body;
+    const {username, email, password} = req.body;
 
     if (!username || !email || !password || !checkEmail(email)) {
         return res.status(422).json({
@@ -44,7 +43,7 @@ userController.registerUser = async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await userService.createUser({username, email, password: hashedPassword, role});
+        const user = await userService.createUser({username, email, password: hashedPassword});
         return res.status(201).json({
             message: 'User created successfully',
             user: user
@@ -96,11 +95,11 @@ userController.loginUser = async (req, res) => {
             })
         }
 
-        const accessToken = jwt.sign({userId: user.id}, process.env.ACCESS_TOKEN_SECRET, {
+        const accessToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.ACCESS_TOKEN_SECRET, {
             subject: 'accessApi',
             expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
         });
-        const refreshToken = jwt.sign({userId: user.id}, process.env.REFRESH_TOKEN_SECRET, {
+        const refreshToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.REFRESH_TOKEN_SECRET, {
             subject: 'refreshToken',
             expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
         });
@@ -159,12 +158,12 @@ userController.refreshToken = async (req, res) => {
 
         await refreshTokenService.deleteRefreshToken(userRefreshToken.id);
 
-        const accessToken = jwt.sign({userId: decoded.userId}, process.env.ACCESS_TOKEN_SECRET, {
+        const accessToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.ACCESS_TOKEN_SECRET, {
             subject: 'accessApi',
             expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
         });
 
-        const newRefreshToken = jwt.sign({userId: decoded.userId}, process.env.REFRESH_TOKEN_SECRET, {
+        const newRefreshToken = jwt.sign({userId: user.id, userUsername: user.username, userEmail: user.email}, process.env.REFRESH_TOKEN_SECRET, {
             subject: 'refreshToken',
             expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
         });
@@ -202,14 +201,6 @@ userController.refreshToken = async (req, res) => {
 userController.logout = async (req, res) => {
     try {
         await refreshTokenService.deleteRefreshTokenForUser(req.user.userId);
-
-        await invalidTokenService.createInvalidToken({
-            token: req.accessToken.value,
-            userId: req.user.userId,
-            exp: req.accessToken.exp
-        });
-
-        return res.status(204).json();
     } catch (error) {
         return res.status(500).json({
             message: error.message
