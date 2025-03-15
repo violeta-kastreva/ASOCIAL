@@ -1,11 +1,12 @@
 // controllers/agentController.js
-const agentService = require('../services/agentService');
+const agentService = require('../services/agent.service');
 
 const agentController = {
   // Create a new Agent
   async create(req, res) {
+    const {name, image, instructions} = req.body;
     try {
-      const agent = await agentService.createAgent(req.body);
+      const agent = await agentService.createAgent({name, image, instructions});
       return res.status(201).json(agent);
     } catch (error) {
       console.error(error);

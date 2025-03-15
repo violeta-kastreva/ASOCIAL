@@ -3,9 +3,10 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     const Comment = sequelize.define('Comment', {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
             primaryKey: true,
+            allowNull: false,
         },
         content: {
             type: DataTypes.TEXT,
