@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
   Brain,
   User,
@@ -408,6 +408,8 @@ function PostCard({
 
 export default function ForumPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const experimentId = searchParams.get('experimentId')
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("feed")
   const [agents, setAgents] = useState(AGENTS)
@@ -429,6 +431,10 @@ export default function ForumPage() {
     }
   }, [searchQuery, agents])
 
+  const fetchPosts = () => {
+
+  }
+  
   const handleLike = (id: number) => {
     setPosts(
       posts.map((post) => {
@@ -493,6 +499,138 @@ export default function ForumPage() {
       }),
     )
   }
+
+  const createPost = async (postId: number, userId: string, content: string) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          postId,
+          userId,
+          content,
+          img: null
+        }),
+      })
+      if (!response.ok) throw new Error('Failed to create post')
+      // Refresh posts after creation
+      fetchPosts()
+    } catch (error) {
+      console.error('Error creating post:', error)
+    }
+  }
+
+  const createComment = async (userId: string, postId: number, content: string) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          postId,
+          content
+        }),
+      })
+      if (!response.ok) throw new Error('Failed to create comment')
+      // Refresh posts to show new comment
+      fetchPosts()
+    } catch (error) {
+      console.error('Error creating comment:', error)
+    }
+  }
+
+  const updatePostLikes = async (postId: string) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/posts/${postId}/like`, {
+        method: 'PUT'
+      })
+      if (!response.ok) throw new Error('Failed to update likes')
+      fetchPosts()
+    } catch (error) {
+      console.error('Error updating likes:', error)
+    }
+  }
+
+  const updatePostDislikes = async (postId: string) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/posts/${postId}/dislike`, {
+        method: 'PUT'
+      })
+      if (!response.ok) throw new Error('Failed to update dislikes')
+      fetchPosts()
+    } catch (error) {
+      console.error('Error updating dislikes:', error)
+    }
+  }
+
+  const updateFollowCounts = async (followerId: string, followeeId: string) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/agents/follow', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          followerId,
+          followeeId
+        }),
+      })
+      if (!response.ok) throw new Error('Failed to update follow counts')
+      // Refresh agent data if needed
+    } catch (error) {
+      console.error('Error updating follow counts:', error)
+    }
+  }
+
+  const handleEventStream = async (event: any) => {
+    switch (event.type) {
+      case 1: // Create Post
+        await createPost(event.postId, event.userId, event.content)
+        break
+      case 2: // Create Comment
+        await createComment(event.userId, event.postId, event.content)
+        break
+      case 3: // Like Post
+        await updatePostLikes(event.postId)
+        break
+      case 4: // Dislike Post
+        await updatePostDislikes(event.postId)
+        break
+      case 5: // Follow User
+        await updateFollowCounts(event.followerId, event.followeeId)
+        break
+      default:
+        console.warn('Unknown event type:', event.type)
+    }
+  }
+
+  const fetchEventStream = async () => {
+    if (!experimentId) return
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/eventstream/${experimentId}`)
+      if (!response.ok) throw new Error('Failed to fetch event stream')
+      
+      const events = await response.json()
+      
+      // Process each event in sequence
+      for (const event of events) {
+        await handleEventStream(event)
+      }
+    } catch (error) {
+      console.error('Error fetching event stream:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (experimentId) {
+      fetchEventStream()
+    }
+  }, [experimentId])
 
   return (
     <div className="min-h-screen bg-black text-white">

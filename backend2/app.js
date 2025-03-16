@@ -15,6 +15,10 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api', require('./routes/authRoutes'));
 app.use('/api/experiments', require('./routes/experimentRoutes'));
+app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/comments', require('./routes/commentRoutes'));
+app.use('/api/agents', require('./routes/agentRoutes'));
+app.use('/api/eventstream', require('./routes/eventstreamRoutes'));
 
 const PORT = process.env.PORT || 8080;
 

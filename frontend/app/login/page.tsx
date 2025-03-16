@@ -54,6 +54,7 @@ export default function Login(): JSX.Element {
         throw new Error(data.message || 'Login failed')
       }
 
+      localStorage.setItem('userId', data.user._id)
       router.push('/experiments')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')

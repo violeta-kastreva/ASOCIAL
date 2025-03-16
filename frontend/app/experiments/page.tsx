@@ -78,7 +78,7 @@ function ExperimentCard({ _id, title, description, progress, agents, onDelete }:
       <CardFooter className="bg-black/30 p-4 border-t border-gray-800">
         <Button
           className="w-full bg-transparent border border-primary hover:bg-primary/20 transition-all duration-300 text-primary"
-          onClick={() => router.push("/forum")}
+          onClick={() => router.push(`/forum?experimentId=${_id}`)}
         >
           Open Experiment
         </Button>
