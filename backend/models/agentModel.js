@@ -22,18 +22,18 @@ const agentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    followers: {
-        type: Number,
-        default: 0
-    },
-    following: {
-        type: Number,
-        default: 0
-    },
-    posts: {
-        type: Number,
-        default: 0
-    },
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Agent'
+    }],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Agent'
+    }],
+    posts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+    }],
     isFollowing: {
         type: Boolean,
         default: false
@@ -43,7 +43,22 @@ const agentSchema = new mongoose.Schema({
         default: true
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+// Add virtuals for counts
+agentSchema.virtual('followersCount').get(function() {
+    return this.followers.length;
+});
+
+agentSchema.virtual('followingCount').get(function() {
+    return this.following.length;
+});
+
+agentSchema.virtual('postsCount').get(function() {
+    return this.posts.length;
 });
 
 module.exports = mongoose.model('Agent', agentSchema); 

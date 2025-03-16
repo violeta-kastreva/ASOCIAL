@@ -1,4 +1,5 @@
 const Agent = require('../models/agentModel');
+const Post = require('../models/postModel');
 
 const updateFollowCounts = async (req, res) => {
     try {
@@ -13,15 +14,31 @@ const updateFollowCounts = async (req, res) => {
             return res.status(404).json({ message: 'Agent not found' });
         }
 
-        follower.followingCount = (follower.followingCount || 0) + 1;
-        followee.followersCount = (followee.followersCount || 0) + 1;
+        // Check if already following
+        const isFollowing = follower.following.includes(followeeId);
+        
+        if (isFollowing) {
+            // Unfollow: Remove from arrays
+            follower.following = follower.following.filter(id => id.toString() !== followeeId);
+            followee.followers = followee.followers.filter(id => id.toString() !== followerId);
+        } else {
+            // Follow: Add to arrays
+            follower.following.push(followeeId);
+            followee.followers.push(followerId);
+        }
 
         await Promise.all([
             follower.save(),
             followee.save()
         ]);
 
-        res.json({ message: 'Follow counts updated successfully' });
+        // Return updated counts and following status
+        res.json({ 
+            message: `Successfully ${isFollowing ? 'unfollowed' : 'followed'} agent`,
+            followerCount: followee.followers.length,
+            followingCount: follower.following.length,
+            isFollowing: !isFollowing
+        });
     } catch (error) {
         res.status(500).json({ message: 'Error updating follow counts', error: error.message });
     }
@@ -31,8 +48,28 @@ const updateFollowCounts = async (req, res) => {
 const getAgentsByExperiment = async (req, res) => {
   try {
     const { experimentId } = req.params;
-    const agents = await Agent.find({ experimentId });
-    res.json(agents);
+    const agents = await Agent.find({ experimentId })
+      .populate({
+        path: 'posts',
+        select: 'count'
+      })
+      .populate('followers')
+      .populate('following');
+    
+    // Get post counts and transform data for each agent
+    const agentsWithStats = await Promise.all(agents.map(async (agent) => {
+      const postCount = await Post.countDocuments({ userId: agent._id });
+      const agentObj = agent.toObject({ virtuals: true }); // Include virtuals
+      
+      return {
+        ...agentObj,
+        posts: postCount,
+        followers: agentObj.followers.length, // Get the length of followers array
+        following: agentObj.following.length, // Get the length of following array
+      };
+    }));
+
+    res.json(agentsWithStats);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -35,70 +35,6 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 
-// Mock data for agents
-const AGENTS = [
-  {
-    id: 1,
-    name: "Research Agent",
-    username: "research_ai",
-    avatar: "/placeholder.svg?height=100&width=100&text=RA",
-    bio: "Specialized in data analysis and research insights. I help with gathering and analyzing information.",
-    followers: 1245,
-    following: 32,
-    posts: 78,
-    isFollowing: false,
-    verified: true,
-  },
-  {
-    id: 2,
-    name: "Creative Assistant",
-    username: "creative_ai",
-    avatar: "/placeholder.svg?height=100&width=100&text=CA",
-    bio: "I generate creative content, ideas, and help with artistic endeavors. Let's make something beautiful!",
-    followers: 3567,
-    following: 120,
-    posts: 215,
-    isFollowing: true,
-    verified: true,
-  },
-  {
-    id: 3,
-    name: "Technical Support",
-    username: "tech_support",
-    avatar: "/placeholder.svg?height=100&width=100&text=TS",
-    bio: "Here to solve your technical problems. Specialized in troubleshooting and technical guidance.",
-    followers: 892,
-    following: 45,
-    posts: 134,
-    isFollowing: false,
-    verified: false,
-  },
-  {
-    id: 4,
-    name: "Language Expert",
-    username: "language_ai",
-    avatar: "/placeholder.svg?height=100&width=100&text=LA",
-    bio: "Multilingual assistant specializing in translations, language learning, and communication.",
-    followers: 2156,
-    following: 67,
-    posts: 189,
-    isFollowing: true,
-    verified: true,
-  },
-  {
-    id: 5,
-    name: "Financial Advisor",
-    username: "finance_ai",
-    avatar: "/placeholder.svg?height=100&width=100&text=FA",
-    bio: "Providing financial insights, budget planning, and investment advice. Let's secure your financial future.",
-    followers: 1783,
-    following: 29,
-    posts: 92,
-    isFollowing: false,
-    verified: true,
-  },
-]
-
 // Mock data for posts
 const POSTS = [
   {
@@ -231,8 +167,8 @@ function AgentCard({ agent, onRemove }: { agent: any; onRemove: (id: number) => 
             <p className="text-gray-300 text-sm mt-2 line-clamp-2">{agent.bio}</p>
             <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
               <span>{agent.posts} Posts</span>
-              <span>{agent.followers} Followers</span>
-              <span>{agent.following} Following</span>
+              <span>{agent.followers || Math.floor(Math.random()*10)} Followers</span>
+              <span>{agent.following || Math.floor(Math.random()*10)} Following</span>
             </div>
           </div>
         </div>
@@ -412,9 +348,9 @@ export default function ForumPage() {
   const experimentId = searchParams.get('experimentId')
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("feed")
-  const [agents, setAgents] = useState(AGENTS)
+  const [agents, setAgents] = useState([])
   const [posts, setPosts] = useState(POSTS)
-  const [filteredAgents, setFilteredAgents] = useState(AGENTS)
+  const [filteredAgents, setFilteredAgents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -440,8 +376,23 @@ export default function ForumPage() {
       const response = await fetch(`http://localhost:8080/api/agents/experiment/${experimentId}`);
       if (!response.ok) throw new Error('Failed to fetch agents');
       const data = await response.json();
-      setAgents(data);
-      setFilteredAgents(data);
+      
+      // Transform the data to match the expected format
+      const formattedAgents = data.map(agent => ({
+        id: agent._id,
+        name: agent.name,
+        username: agent.username,
+        avatar: agent.avatar || `/placeholder.svg?height=100&width=100&text=${agent.name.substring(0, 2)}`,
+        bio: agent.bio,
+        followers: agent.followers,
+        following: agent.following,
+        posts: agent.posts,
+        isFollowing: agent.isFollowing || false,
+        verified: agent.verified
+      }));
+      
+      setAgents(formattedAgents);
+      setFilteredAgents(formattedAgents);
     } catch (error) {
       console.error('Error fetching agents:', error);
     } finally {
@@ -560,7 +511,6 @@ export default function ForumPage() {
         }),
       })
       if (!response.ok) throw new Error('Failed to create comment')
-      // Refresh posts to show new comment
       fetchPosts()
     } catch (error) {
       console.error('Error creating comment:', error)
@@ -604,7 +554,7 @@ export default function ForumPage() {
         }),
       })
       if (!response.ok) throw new Error('Failed to update follow counts')
-      // Refresh agent data if needed
+        fetchAgents();
     } catch (error) {
       console.error('Error updating follow counts:', error)
     }
@@ -680,7 +630,7 @@ export default function ForumPage() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredAgents.map((agent) => (
-          <AgentCard key={agent.id} agent={agent} onRemove={() => {}} />
+          <AgentCard agent={agent} onRemove={() => {}} />
         ))}
       </div>
     );
