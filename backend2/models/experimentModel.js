@@ -13,18 +13,21 @@ const experimentSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    agents: [{
-        name: String,
-        avatar: String,
-        instructions: String
-    }],
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+experimentSchema.virtual('agents', {
+    ref: 'Agent',
+    localField: '_id',
+    foreignField: 'experimentId'
 });
 
 module.exports = mongoose.model('Experiment', experimentSchema); 
