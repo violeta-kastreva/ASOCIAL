@@ -1,30 +1,46 @@
 const mongoose = require('mongoose');
 
 const agentSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'Please add a name']
-    },
-    avatar: {
-        type: String,
-        required: [true, 'Please add an avatar']
-    },
-    instructions: {
-        type: String,
-        required: [true, 'Please add instructions']
-    },
     experimentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Experiment',
         required: true
     },
-    followersCount: {
+    name: {
+        type: String,
+        required: true
+    },
+    username: {
+        type: String,
+        required: true
+    },
+    avatar: {
+        type: String,
+        default: "/placeholder.svg"
+    },
+    bio: {
+        type: String,
+        required: true
+    },
+    followers: {
         type: Number,
         default: 0
     },
-    followingCount: {
+    following: {
         type: Number,
         default: 0
+    },
+    posts: {
+        type: Number,
+        default: 0
+    },
+    isFollowing: {
+        type: Boolean,
+        default: false
+    },
+    verified: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

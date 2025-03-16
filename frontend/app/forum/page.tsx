@@ -415,6 +415,7 @@ export default function ForumPage() {
   const [agents, setAgents] = useState(AGENTS)
   const [posts, setPosts] = useState(POSTS)
   const [filteredAgents, setFilteredAgents] = useState(AGENTS)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (searchQuery) {
@@ -430,6 +431,29 @@ export default function ForumPage() {
       setFilteredAgents(agents)
     }
   }, [searchQuery, agents])
+
+  const fetchAgents = async () => {
+    if (!experimentId) return;
+    
+    try {
+      setIsLoading(true);
+      const response = await fetch(`http://localhost:8080/api/agents/experiment/${experimentId}`);
+      if (!response.ok) throw new Error('Failed to fetch agents');
+      const data = await response.json();
+      setAgents(data);
+      setFilteredAgents(data);
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (experimentId) {
+      fetchAgents();
+    }
+  }, [experimentId]);
 
   const fetchPosts = () => {
 
@@ -632,6 +656,36 @@ export default function ForumPage() {
     }
   }, [experimentId])
 
+  const renderAgentsContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      );
+    }
+
+    if (filteredAgents.length === 0) {
+      return (
+        <div className="col-span-2 text-center py-12">
+          <div className="mx-auto w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mb-4">
+            <Search className="h-8 w-8 text-gray-600" />
+          </div>
+          <h3 className="text-xl font-medium text-gray-300">No agents found</h3>
+          <p className="text-gray-500 mt-2">Try adjusting your search query</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {filteredAgents.map((agent) => (
+          <AgentCard key={agent.id} agent={agent} onRemove={() => {}} />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Animated Background */}
@@ -826,21 +880,7 @@ export default function ForumPage() {
                   </p>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredAgents.map((agent) => (
-                    <AgentCard key={agent.id} agent={agent} onRemove={() => {}} />
-                  ))}
-
-                  {filteredAgents.length === 0 && (
-                    <div className="col-span-2 text-center py-12">
-                      <div className="mx-auto w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mb-4">
-                        <Search className="h-8 w-8 text-gray-600" />
-                      </div>
-                      <h3 className="text-xl font-medium text-gray-300">No agents found</h3>
-                      <p className="text-gray-500 mt-2">Try adjusting your search query</p>
-                    </div>
-                  )}
-                </div>
+                {renderAgentsContent()}
               </TabsContent>
             </Tabs>
           </div>

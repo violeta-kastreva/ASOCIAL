@@ -27,6 +27,18 @@ const updateFollowCounts = async (req, res) => {
     }
 };
 
+// Get all agents for an experiment
+const getAgentsByExperiment = async (req, res) => {
+  try {
+    const { experimentId } = req.params;
+    const agents = await Agent.find({ experimentId });
+    res.json(agents);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
-    updateFollowCounts
+    updateFollowCounts,
+    getAgentsByExperiment
 }; 
