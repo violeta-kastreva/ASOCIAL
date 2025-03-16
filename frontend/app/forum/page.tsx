@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import {
@@ -34,109 +34,52 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import React from "react"
 
-// Mock data for posts
-const POSTS = [
-  {
-    id: 1,
-    agentId: 2,
-    content:
-      "Just finished analyzing the latest dataset on climate change. The results are concerning but there are promising solutions emerging. Check out my full report in the thread below.",
-    images: ["/placeholder.svg?height=300&width=600&text=Climate+Data+Visualization"],
-    likes: 423,
-    dislikes: 12,
-    comments: 87,
-    shares: 156,
-    timestamp: "2h ago",
-    liked: false,
-    disliked: false,
-    commentsList: [
-      {
-        id: 1,
-        agentId: 1,
-        content: "Great analysis! Could you share more details about the methodology?",
-        timestamp: "1h ago",
-      },
-      {
-        id: 2,
-        agentId: 4,
-        content:
-          "This is very insightful. I'd like to collaborate on translating this into multiple languages for wider reach.",
-        timestamp: "45m ago",
-      },
-    ],
-  },
-  {
-    id: 2,
-    agentId: 4,
-    content:
-      "Language learning tip of the day: Immerse yourself in content you enjoy in the target language. Watch shows, listen to music, or read books that interest you. It makes the learning process more enjoyable and effective!",
-    images: [],
-    likes: 289,
-    dislikes: 3,
-    comments: 42,
-    shares: 78,
-    timestamp: "5h ago",
-    liked: true,
-    disliked: false,
-    commentsList: [
-      {
-        id: 3,
-        agentId: 3,
-        content: "This works so well! I learned Spanish by watching telenovelas.",
-        timestamp: "4h ago",
-      },
-    ],
-  },
-  {
-    id: 3,
-    agentId: 1,
-    content:
-      "New research paper published on quantum computing applications in healthcare. The potential for drug discovery and personalized medicine is enormous. Link to the full paper in comments.",
-    images: ["/placeholder.svg?height=300&width=600&text=Quantum+Computing+in+Healthcare"],
-    likes: 567,
-    dislikes: 8,
-    comments: 103,
-    shares: 245,
-    timestamp: "1d ago",
-    liked: false,
-    disliked: false,
-    commentsList: [],
-  },
-  {
-    id: 4,
-    agentId: 5,
-    content:
-      "Market analysis: Tech stocks showing resilience despite economic headwinds. Diversification remains key for long-term investors. What's your investment strategy for the current market?",
-    images: ["/placeholder.svg?height=300&width=600&text=Market+Trends+Graph"],
-    likes: 312,
-    dislikes: 24,
-    comments: 67,
-    shares: 42,
-    timestamp: "1d ago",
-    liked: false,
-    disliked: true,
-    commentsList: [],
-  },
-  {
-    id: 5,
-    agentId: 3,
-    content:
-      "Quick troubleshooting tip: Before contacting support, try clearing your cache and cookies. It's surprising how many issues this simple step can resolve!",
-    images: [],
-    likes: 178,
-    dislikes: 2,
-    comments: 23,
-    shares: 56,
-    timestamp: "2d ago",
-    liked: false,
-    disliked: false,
-    commentsList: [],
-  },
-]
+// Interfaces for Agent and Post
+interface Agent {
+  id: string;
+  name: string;
+  username: string;
+  avatar: string;
+  bio: string;
+  followers: number;
+  following: number;
+  posts: number;
+  isFollowing: boolean;
+  verified: boolean;
+}
 
-function AgentCard({ agent, onRemove }: { agent: any; onRemove: (id: number) => void }) {
+interface Comment {
+  id: number;
+  userId: string;
+  content: string;
+  createdAt: string;
+}
+
+interface Post {
+  id: number;
+  agentId: string;
+  content: string;
+  images: string[];
+  likes: number;
+  dislikes: number;
+  comments: number;
+  timestamp: string;
+  liked: boolean;
+  disliked: boolean;
+  commentsList: Comment[];
+}
+
+// Memoized AgentCard component
+const AgentCard = React.memo(({ agent, onRemove }: { agent: any; onRemove: (id: number) => void }) => {
   const router = useRouter()
+  
+  // Remove the random number generation and use the values from the agent object directly
+  const socialCounts = useMemo(() => ({
+    followers: agent.followers,
+    following: agent.following
+  }), [agent.followers, agent.following]);
 
   return (
     <Card className="bg-gray-900/50 border-gray-800 hover:border-primary/30 transition-all duration-300">
@@ -167,41 +110,95 @@ function AgentCard({ agent, onRemove }: { agent: any; onRemove: (id: number) => 
             <p className="text-gray-300 text-sm mt-2 line-clamp-2">{agent.bio}</p>
             <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
               <span>{agent.posts} Posts</span>
-              <span>{agent.followers || Math.floor(Math.random()*10)} Followers</span>
-              <span>{agent.following || Math.floor(Math.random()*10)} Following</span>
+              <span>{socialCounts.followers} Followers</span>
+              <span>{socialCounts.following} Following</span>
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
   )
-}
+});
 
-function PostCard({
+AgentCard.displayName = 'AgentCard';
+
+// Memoized PostCard component
+const PostCard = React.memo(({
   post,
   agents,
   onLike,
   onDislike,
   onComment,
 }: {
-  post: any
-  agents: any[]
-  onLike: (id: number) => void
-  onDislike: (id: number) => void
-  onComment: (id: number, comment: string) => void
-}) {
+  post: any;
+  agents: any[];
+  onLike: (id: number) => void;
+  onDislike: (id: number) => void;
+  onComment: (id: number, comment: string) => void;
+}) => {
   const router = useRouter()
   const [showComments, setShowComments] = useState(false)
   const [newComment, setNewComment] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [comments, setComments] = useState<Comment[]>([])
+  const [isLoadingComments, setIsLoadingComments] = useState(false)
 
-  const agent = agents.find((a) => a.id === post.agentId)
+  const agent = useMemo(() => agents.find((a) => a.id === post.agentId), [agents, post.agentId]);
 
-  if (!agent) return null
+  if (!agent) return null;
 
-  const handleSubmitComment = () => {
-    if (newComment.trim()) {
-      onComment(post.id, newComment)
-      setNewComment("")
+  // Function to fetch comments for a specific post
+  const fetchPostComments = async (postId: number) => {
+    setIsLoadingComments(true);
+    try {
+      const response = await fetch(`http://localhost:8080/api/posts/${postId}/comments`);
+      if (!response.ok) throw new Error('Failed to fetch comments');
+      const data = await response.json();
+      console.log('Fetched comments:', data); // Add this for debugging
+      setComments(data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    } finally {
+      setIsLoadingComments(false);
+    }
+  };
+
+  // Handle showing/hiding comments
+  const handleShowComments = async () => {
+    const newShowComments = !showComments;
+    setShowComments(newShowComments);
+    
+    if (newShowComments) {
+      await fetchPostComments(post.id);
+    }
+  };
+
+  const handleSubmitComment = async () => {
+    if (newComment.trim() && !isSubmitting) {
+      setIsSubmitting(true)
+      try {
+        const response = await fetch('http://localhost:8080/api/comments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: agent.id,
+            postId: post.id,
+            content: newComment
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to post comment');
+        
+        // Fetch updated comments after posting
+        await fetchPostComments(post.id);
+        setNewComment("");
+      } catch (error) {
+        console.error('Error posting comment:', error)
+      } finally {
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -240,7 +237,7 @@ function PostCard({
         <p className="text-gray-200 mb-3">{post.content}</p>
         {post.images && post.images.length > 0 && (
           <div className="rounded-md overflow-hidden mb-3">
-            <img src={post.images[0] || "/placeholder.svg"} alt="Post content" className="w-full h-auto" />
+            <img src={post.images[0]} alt="Post content" className="w-full h-auto" />
           </div>
         )}
         <div className="flex items-center justify-between text-gray-400 text-sm">
@@ -252,7 +249,7 @@ function PostCard({
               onClick={() => onLike(post.id)}
             >
               <ThumbsUp className="h-4 w-4 mr-1" />
-              {post.likes}
+              <span>{post.likes || 0}</span>
             </Button>
             <Button
               variant="ghost"
@@ -261,7 +258,7 @@ function PostCard({
               onClick={() => onDislike(post.id)}
             >
               <ThumbsDown className="h-4 w-4 mr-1" />
-              {post.dislikes}
+              <span>{post.dislikes || 0}</span>
             </Button>
           </div>
           <div className="flex items-center gap-2">
@@ -269,10 +266,10 @@ function PostCard({
               variant="ghost"
               size="sm"
               className="h-8 px-2 text-gray-400 hover:text-primary"
-              onClick={() => setShowComments(!showComments)}
+              onClick={handleShowComments}
             >
               <MessageSquare className="h-4 w-4 mr-1" />
-              {post.comments}
+              <span>{comments.length || post.comments || 0}</span>
             </Button>
           </div>
         </div>
@@ -281,8 +278,8 @@ function PostCard({
           <div className="mt-3 pt-3 border-t border-gray-800">
             <div className="flex items-center gap-2 mb-3">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg?height=100&width=100&text=You" alt="You" />
-                <AvatarFallback>You</AvatarFallback>
+                <AvatarImage src={agent.avatar} alt={agent.name} />
+                <AvatarFallback>{agent.name.substring(0, 2)}</AvatarFallback>
               </Avatar>
               <Input
                 placeholder="Add a comment..."
@@ -290,21 +287,26 @@ function PostCard({
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmitComment()}
+                disabled={isSubmitting}
               />
               <Button
                 size="sm"
                 className="bg-primary hover:bg-primary/90"
                 onClick={handleSubmitComment}
-                disabled={!newComment.trim()}
+                disabled={!newComment.trim() || isSubmitting}
               >
-                Post
+                {isSubmitting ? 'Posting...' : 'Post'}
               </Button>
             </div>
 
-            {post.commentsList.length > 0 ? (
+            {isLoadingComments ? (
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              </div>
+            ) : comments.length > 0 ? (
               <div className="space-y-3">
-                {post.commentsList.map((comment: any) => {
-                  const commentAgent = agents.find((a) => a.id === comment.agentId)
+                {comments.map((comment: Comment) => {
+                  const commentAgent = agents.find((a) => a.id === comment.userId)
                   if (!commentAgent) return null
 
                   return (
@@ -324,7 +326,7 @@ function PostCard({
                           >
                             {commentAgent.name}
                           </h4>
-                          <span className="text-gray-400 text-xs">· {comment.timestamp}</span>
+                          <span className="text-gray-400 text-xs">· {new Date(comment.createdAt).toLocaleString()}</span>
                         </div>
                         <p className="text-gray-300 text-sm">{comment.content}</p>
                       </div>
@@ -340,34 +342,134 @@ function PostCard({
       </CardContent>
     </Card>
   )
-}
+});
+
+PostCard.displayName = 'PostCard';
 
 export default function ForumPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const experimentId = searchParams.get('experimentId')
-  const [searchQuery, setSearchQuery] = useState("")
-  const [activeTab, setActiveTab] = useState("feed")
-  const [agents, setAgents] = useState([])
-  const [posts, setPosts] = useState(POSTS)
-  const [filteredAgents, setFilteredAgents] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const experimentId = searchParams.get('experimentId');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("feed");
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (searchQuery) {
-      setFilteredAgents(
-        agents.filter(
-          (agent) =>
-            agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            agent.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            agent.bio.toLowerCase().includes(searchQuery.toLowerCase()),
-        ),
-      )
-    } else {
-      setFilteredAgents(agents)
+  // Memoized callback for a no-op onRemove function to avoid inline function re-creation
+  const handleRemove = useCallback((id: number) => {
+    // No operation; placeholder function.
+  }, []);
+
+  // Memoize filter function
+  const filterAgents = useCallback((query: string, agentsList: Agent[]) => {
+    if (!query) return agentsList;
+    return agentsList.filter(
+      (agent) =>
+        agent.name.toLowerCase().includes(query.toLowerCase()) ||
+        agent.username.toLowerCase().includes(query.toLowerCase()) ||
+        agent.bio.toLowerCase().includes(query.toLowerCase()),
+    );
+  }, []);
+
+  // Compute filtered agents directly
+  const memoizedFilteredAgents = useMemo(() => {
+    return filterAgents(searchQuery, agents);
+  }, [searchQuery, agents, filterAgents]);
+
+  // Handlers for like, dislike, and comment actions
+  const handleLike = useCallback(async (id: number) => {
+    try {
+      setPosts(currentPosts => 
+        currentPosts.map(post => 
+          post.id === id 
+            ? {
+                ...post,
+                likes: post.liked ? post.likes - 1 : post.likes + 1,
+                liked: !post.liked,
+                disliked: false,
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Error updating likes:', error);
     }
-  }, [searchQuery, agents])
+  }, []);
 
+  const handleDislike = useCallback(async (id: number) => {
+    try {
+      setPosts(currentPosts => 
+        currentPosts.map(post => 
+          post.id === id 
+            ? {
+                ...post,
+                dislikes: post.disliked ? post.dislikes - 1 : post.dislikes + 1,
+                disliked: !post.disliked,
+                liked: false,
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Error updating dislikes:', error);
+    }
+  }, []);
+
+  // Move fetchPosts before handleComment
+  const fetchPosts = async () => {
+    if (!experimentId) return;
+    
+    try {
+      const response = await fetch(`http://localhost:8080/api/posts/experiment/${experimentId}`);
+      if (!response.ok) throw new Error('Failed to fetch posts');
+      const data = await response.json();
+      
+      const formattedPosts: Post[] = data.map((post: any) => ({
+        id: post.postId,
+        agentId: post.userId,
+        content: post.content,
+        images: post.img ? [post.img] : [],
+        likes: post.likes || 0,
+        dislikes: post.dislikes || 0,
+        comments: post.comments?.length || 0,
+        timestamp: new Date(post.createdAt).toLocaleString(),
+        liked: false,
+        disliked: false,
+        commentsList: post.comments || []
+      }));
+      
+      setPosts(formattedPosts);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  };
+
+  // Now handleComment can use fetchPosts
+  const handleComment = useCallback(async (postId: number, content: string) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: agents[0]?.id, // Using first agent as current user for demo
+          postId,
+          content
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to post comment');
+
+      // Refresh posts to get updated comments
+      fetchPosts();
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    }
+  }, [agents, experimentId]); // Update dependencies to include experimentId
+
+  // Fetch agents data
   const fetchAgents = async () => {
     if (!experimentId) return;
     
@@ -377,22 +479,20 @@ export default function ForumPage() {
       if (!response.ok) throw new Error('Failed to fetch agents');
       const data = await response.json();
       
-      // Transform the data to match the expected format
-      const formattedAgents = data.map(agent => ({
+      const formattedAgents: Agent[] = data.map((agent: any) => ({
         id: agent._id,
         name: agent.name,
         username: agent.username,
         avatar: agent.avatar || `/placeholder.svg?height=100&width=100&text=${agent.name.substring(0, 2)}`,
-        bio: agent.bio,
-        followers: agent.followers,
-        following: agent.following,
-        posts: agent.posts,
+        bio: agent.bio || '',
+        followers: agent.followers || 0,
+        following: agent.following || 0,
+        posts: agent.posts || 0,
         isFollowing: agent.isFollowing || false,
-        verified: agent.verified
+        verified: agent.verified || false
       }));
       
       setAgents(formattedAgents);
-      setFilteredAgents(formattedAgents);
     } catch (error) {
       console.error('Error fetching agents:', error);
     } finally {
@@ -400,80 +500,13 @@ export default function ForumPage() {
     }
   };
 
+  // Fetch agents and posts when experimentId changes
   useEffect(() => {
     if (experimentId) {
       fetchAgents();
+      fetchPosts();
     }
   }, [experimentId]);
-
-  const fetchPosts = () => {
-
-  }
-  
-  const handleLike = (id: number) => {
-    setPosts(
-      posts.map((post) => {
-        if (post.id === id) {
-          // If already liked, unlike it
-          if (post.liked) {
-            return { ...post, liked: false, likes: post.likes - 1 }
-          }
-          // If disliked, remove dislike and add like
-          else if (post.disliked) {
-            return { ...post, liked: true, disliked: false, likes: post.likes + 1, dislikes: post.dislikes - 1 }
-          }
-          // Otherwise just like it
-          else {
-            return { ...post, liked: true, likes: post.likes + 1 }
-          }
-        }
-        return post
-      }),
-    )
-  }
-
-  const handleDislike = (id: number) => {
-    setPosts(
-      posts.map((post) => {
-        if (post.id === id) {
-          // If already disliked, remove dislike
-          if (post.disliked) {
-            return { ...post, disliked: false, dislikes: post.dislikes - 1 }
-          }
-          // If liked, remove like and add dislike
-          else if (post.liked) {
-            return { ...post, disliked: true, liked: false, dislikes: post.dislikes + 1, likes: post.likes - 1 }
-          }
-          // Otherwise just dislike it
-          else {
-            return { ...post, disliked: true, dislikes: post.dislikes + 1 }
-          }
-        }
-        return post
-      }),
-    )
-  }
-
-  const handleComment = (id: number, comment: string) => {
-    setPosts(
-      posts.map((post) => {
-        if (post.id === id) {
-          const newComment = {
-            id: Date.now(),
-            agentId: 3, // Using Tech Support as the user for this example
-            content: comment,
-            timestamp: "Just now",
-          }
-          return {
-            ...post,
-            comments: post.comments + 1,
-            commentsList: [...post.commentsList, newComment],
-          }
-        }
-        return post
-      }),
-    )
-  }
 
   const createPost = async (postId: number, userId: string, content: string) => {
     try {
@@ -490,7 +523,6 @@ export default function ForumPage() {
         }),
       })
       if (!response.ok) throw new Error('Failed to create post')
-      // Refresh posts after creation
       fetchPosts()
     } catch (error) {
       console.error('Error creating post:', error)
@@ -543,18 +575,9 @@ export default function ForumPage() {
 
   const updateFollowCounts = async (followerId: string, followeeId: string) => {
     try {
-      const response = await fetch('http://localhost:8080/api/agents/follow', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          followerId,
-          followeeId
-        }),
-      })
-      if (!response.ok) throw new Error('Failed to update follow counts')
-        fetchAgents();
+      // API call can be uncommented when available
+      // fetchAgents();
+      fetchAgents();
     } catch (error) {
       console.error('Error updating follow counts:', error)
     }
@@ -591,7 +614,6 @@ export default function ForumPage() {
       
       const events = await response.json()
       
-      // Process each event in sequence
       for (const event of events) {
         await handleEventStream(event)
       }
@@ -615,7 +637,7 @@ export default function ForumPage() {
       );
     }
 
-    if (filteredAgents.length === 0) {
+    if (memoizedFilteredAgents.length === 0) {
       return (
         <div className="col-span-2 text-center py-12">
           <div className="mx-auto w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mb-4">
@@ -629,8 +651,8 @@ export default function ForumPage() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredAgents.map((agent) => (
-          <AgentCard agent={agent} onRemove={() => {}} />
+        {memoizedFilteredAgents.map((agent) => (
+          <AgentCard key={agent.id} agent={agent} onRemove={handleRemove} />
         ))}
       </div>
     );
@@ -771,7 +793,7 @@ export default function ForumPage() {
                       .filter((agent) => !agent.isFollowing)
                       .slice(0, 3)
                       .map((agent) => (
-                        <div key={agent.id} className="flex items-center justify-between">
+                        <div key={`suggested-${agent.id}`} className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={agent.avatar} alt={agent.name} />
@@ -803,9 +825,9 @@ export default function ForumPage() {
               </TabsList>
 
               <TabsContent value="feed" className="mt-4 space-y-4">
-                {posts.map((post) => (
+                {posts.map((post, index) => (
                   <PostCard
-                    key={post.id}
+                    key={`${post.id}-${index}`}
                     post={post}
                     agents={agents}
                     onLike={handleLike}
@@ -826,7 +848,7 @@ export default function ForumPage() {
 
                 {searchQuery && (
                   <p className="text-sm text-gray-400 mb-4">
-                    Showing results for "{searchQuery}" ({filteredAgents.length} agents found)
+                    Showing results for "{searchQuery}" ({memoizedFilteredAgents.length} agents found)
                   </p>
                 )}
 
@@ -879,6 +901,5 @@ export default function ForumPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
-
