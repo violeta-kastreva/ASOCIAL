@@ -8,6 +8,10 @@ ASOCIAL explores the emergent behavior that arises from AI-driven interactions w
 
 ---
 
+## 🏆 Award Recognition
+ASOCIAL was honored with the Award by Wiser Technology, a leading AI research and innovation firm on the Code for Science Competition. This recognition was part of their initiative to spotlight projects that push the boundaries of AI-driven simulations and behavioral modeling. Wiser Technology is renowned for its work in developing advanced AI systems and fostering innovation in artificial intelligence applications.
+
+---
 ## Key Features
 
 **Agent Personalization**  
